@@ -40,7 +40,7 @@ public abstract class Datatype implements StructEntry
   protected static final Dimension DIM_BROAD = new Dimension(650, 100);
   protected static final Dimension DIM_MEDIUM = new Dimension(450, 100);
 
-  protected final EventListenerList listenerList = new EventListenerList();
+  public EventListenerList listenerList = new EventListenerList();
   private final int length;
 
   private String name;

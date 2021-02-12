@@ -170,7 +170,7 @@ public final class ResourceFactory implements FileWatchListener
                  ext.equals("BIO") || ext.equals("RES") ||
                  ext.equals("TXT") ||
                  ext.equals("LOG") ||// WeiDU log files
-                 (ext.equals("SRC") && Profile.getEngine() == Profile.Engine.IWD2) ||
+                 ((ext.equals("SRC") || ext.equals("LUA")) && Profile.getEngine() == Profile.Engine.IWD2) ||
                  (Profile.isEnhancedEdition() && (ext.equals("SQL") ||
                                                   ext.equals("GUI") ||
                                                   ext.equals("LUA") ||

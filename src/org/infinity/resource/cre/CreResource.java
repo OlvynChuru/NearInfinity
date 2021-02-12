@@ -191,10 +191,20 @@ public final class CreResource extends AbstractStruct
   public static final String CRE_LEVEL_WIZARD                 = "Wizard level";
   public static final String CRE_SOUND_SLOT_FMT               = "Sound: %s";
   public static final String CRE_SOUND_SLOT_GENERIC           = "Soundset string";
+  public static final String CRE_HEIGHT                       = "Height";
+  public static final String CRE_VERTICAL_VELOCITY            = "Vertical velocity";
+  public static final String CRE_VERTICAL_ACCEL               = "Vertical acceleration";
+  public static final String CRE_MIN_HEIGHT                   = "Minimum height";
+  public static final String CRE_MAXIMUM_HEIGHT               = "Minimum height";
+  public static final String CRE_SUMMONER_ID                  = "Summoner identifier";
+  public static final String CRE_HAS_FOUND_SUMMONER           = "Used internally";
+  public static final String CRE_SUMMON_NUMBER                = "Summon number";
+  public static final String CRE_EXTRA_FLAGS                  = "Extra flags";
   public static final String CRE_ENCHANTMENT_LEVEL            = "Enchantment level";
-  public static final String CRE_FEATS_1                      = "Feats (1/3)";
-  public static final String CRE_FEATS_2                      = "Feats (2/3)";
-  public static final String CRE_FEATS_3                      = "Feats (3/3)";
+  public static final String CRE_FEATS_1                      = "Feats (1/4)";
+  public static final String CRE_FEATS_2                      = "Feats (2/4)";
+  public static final String CRE_FEATS_3                      = "Feats (3/4)";
+  public static final String CRE_FEATS_4                      = "Feats (4/4)";
   public static final String CRE_PROFICIENCY_LARGE_SWORD      = "Large sword proficiency";
   public static final String CRE_PROFICIENCY_SMALL_SWORD      = "Small sword proficiency";
   public static final String CRE_PROFICIENCY_BOW              = "Bow proficiency";
@@ -240,6 +250,36 @@ public final class CreResource extends AbstractStruct
   public static final String CRE_EXTRA_SMITING                = "Extra smiting";
   public static final String CRE_EXTRA_TURNING                = "Extra turning";
   public static final String CRE_EW_BASTARD_SWORD             = "EW: Bastard sword";
+  public static final String CRE_AUGMENT_SUMMONING            = "Augment summoning";
+  public static final String CRE_CONCOCT_POTIONS              = "Concoct potions";
+  public static final String CRE_DEFENSIVE_STANCE             = "Defensive stance";
+  public static final String CRE_EXTEND_SPELL                 = "Extend spell";
+  public static final String CRE_FEINT                        = "Feint";
+  public static final String CRE_IMPROVED_SNEAK_ATTACK        = "Improved sneak attack";
+  public static final String CRE_IMPROVED_TWO_WEAPON_FIGHTING = "Improved two-weapon fighting";
+  public static final String CRE_IMPROVED_UNARMED_ABILITIES   = "Improved unarmed abilities";
+  public static final String CRE_KENSEI                       = "Kensei";
+  public static final String CRE_KNOCKDOWN                    = "Knockdown";
+  public static final String CRE_LIGHT_ARMOR_MASTERY          = "Light armor mastery";
+  public static final String CRE_MASTER_OF_MAGIC_FORCE        = "Master of magic force";
+  public static final String CRE_MAXIMIZE_SPELL               = "Maximize spell";
+  public static final String CRE_MOBILITY                     = "Mobility";
+  public static final String CRE_QUICKEN_SPELL                = "Quicken spell";
+  public static final String CRE_RAPID_RELOAD                 = "Rapid reload";
+  public static final String CRE_SAFE_SPELL                   = "Safe spell";
+  public static final String CRE_SHIELD_FOCUS                 = "Shield focus";
+  public static final String CRE_SPRING_ATTACK                = "Spring attack";
+  public static final String CRE_TERRIFYING_RAGE              = "Terrifying rage";
+  public static final String CRE_TWO_WEAPON_DEFENSE           = "Two-weapon defense";
+  public static final String CRE_WHIRLWIND_ATTACK             = "Whirlwind attack";
+  public static final String CRE_NATURAL_SPELL                = "Natural spell";
+  public static final String CRE_COUNTERSPELL                 = "Counterspell";
+  public static final String CRE_EMPOWER_SPELL                = "Empower spell";
+  public static final String CRE_PERSISTENT_SPELL             = "Persistent spell";
+  public static final String CRE_WIDEN_SPELL                  = "Widen spell";
+  public static final String CRE_MASS_SPELL                   = "Mass spell";
+  public static final String CRE_MANYSHOT                     = "Manyshot";
+  public static final String CRE_COMBAT_REFLEXES              = "Combat reflexes";
   public static final String CRE_NIGHTMARE_MODE               = "Nightmare mode";
   public static final String CRE_TRANSLUCENCY                 = "Translucency";
   public static final String CRE_REPUTATION_MOD_KILLED        = "Reputation gain/loss when killed";
@@ -433,6 +473,10 @@ public final class CreResource extends AbstractStruct
     "Holding item", "Reset bit 16", null, null, "EE: No exploding death", null, "EE: Ignore nightmare mode",
     "EE: No tooltip", "Allegiance tracking", "General tracking", "Race tracking", "Class tracking",
     "Specifics tracking", "Gender tracking", "Alignment tracking", "Uninterruptible"};
+  public static final String[] s_iwd2ee_cre_flag = {
+    "No flags set", null, null, null, null, null, null, null, null, 
+	null, null, null, null, "Armored arcana multiplied;Used internally to increase the effect of Armored Arcana.", null, null, null,
+    "Rewind time recording;The game is recording the character's effects, HP and position for Rewind Time.", "Metamagic updated;Used internally.", null, null, null, null, null, "Wall of force creature;Used internally for Wall of Force."};
   public static final String[] s_feats1 = {
     "No feats selected", "Aegis of rime", "Ambidexterity", "Aqua mortis", "Armor proficiency", "Armored arcana",
     "Arterial strike", "Blind fight", "Bullheaded", "Cleave", "Combat casting", "Courteous magocracy", "Crippling strike",
@@ -452,7 +496,14 @@ public final class CreResource extends AbstractStruct
     "No feats selected", "Spell penetration", "Spirit of flame", "Strong back", "Stunning fist",
     "Subvocal casting",
     "Toughness", "Two-weapon fighting", "Weapon finesse", "Wild shape boar", "Wild shape panther",
-    "Wild shape shambler"};
+    "Wild shape shambler", "Augment summoning", "Concoct potions", "Defensive stance", "Extend spell", 
+	"Feint", "Improved sneak attack", "Improved two-weapon fighting", "Improved unarmed abilities", 
+	"Kensei", "Knockdown", "Light armor mastery", "Master of magic force", "Maximize spell", "Mobility", 
+	"Quicken spell", "Rapid reload", "Safe spell", "Shield focus", "Spring attack", "Terrifying rage", 
+	"Two-weapon defense"};
+  public static final String[] s_feats4 = {
+    "No feats selected", "Whirlwind attack", "Natural spell", "Counterspell", "Empower spell",
+    "Persistent spell", "Widen spell", "Mass spell", "Manyshot", "Combat reflexes"};
   public static final String[] s_subraces = {
       "Pureblood",
       "Aamimar/Drow/Gold dwarf/Strongheart halfling/Deep gnome",
@@ -462,7 +513,7 @@ public final class CreResource extends AbstractStruct
     "Script name only", "Track faction death", "Track team death", "Invulnerable",
     "Modify good on death", "Modify law on death", "Modify lady on death", "Modify murder on death",
     "No dialogue turn", "Call for help", null, null, null, null, null, null, null, null, null, null, null, null, null, null, "Death globals set (internal)", "Area supplemental"};
-  public static final String[] s_attributes_iwd2 = {"No flags set", "Mental fortitude", "Critical hit immunity",
+  public static final String[] s_attributes_iwd2 = {"No flags set", "Heart of Fury bonuses", "Critical hit immunity",
                                                     "Cannot be paladin", "Cannot be monk"};
   public static final String[] s_attacks = {"0", "1", "2", "3", "4", "5", "1/2", "3/2", "5/2", "7/2", "9/2"};
   public static final String[] s_visible = {"Shown", "Hidden"};
@@ -1072,18 +1123,28 @@ public final class CreResource extends AbstractStruct
       sndMap = IdsMapCache.get("SOUNDOFF.IDS");
     }
     if (sndMap != null) {
-      for (int i = 0; i < 64; i++) {
+      for (int i = 0; i < 54; i++) {
         IdsMapEntry e = sndMap.get((long)i);
         String label = (e != null) ? e.getSymbol() : "Unknown";
         addField(new StringRef(buffer, offset + 164 + (i * 4), String.format(CRE_SOUND_SLOT_FMT, label)));
       }
     }
     else {
-      for (int i = 0; i < 64; i++) {
+      for (int i = 0; i < 54; i++) {
         addField(new StringRef(buffer, offset + 164 + (i * 4), CRE_SOUND_SLOT_GENERIC));
       }
     }
-
+	addField(new DecNumber(buffer, offset + 380, 2, CRE_HEIGHT));
+	addField(new DecNumber(buffer, offset + 382, 2, CRE_VERTICAL_VELOCITY));
+	addField(new DecNumber(buffer, offset + 384, 2, CRE_VERTICAL_ACCEL));
+    addField(new Unknown(buffer, offset + 386, 6));
+	addField(new DecNumber(buffer, offset + 392, 4, CRE_SUMMONER_ID));
+	addField(new DecNumber(buffer, offset + 396, 1, CRE_HAS_FOUND_SUMMONER));
+	addField(new Unknown(buffer, offset + 397, 1));
+	addField(new DecNumber(buffer, offset + 398, 2, CRE_SUMMON_NUMBER));
+	addField(new Unknown(buffer, offset + 400, 12));
+	addField(new Flag(buffer, offset + 412, 4, CRE_EXTRA_FLAGS, s_iwd2ee_cre_flag));
+	addField(new Unknown(buffer, offset + 416, 4));
     addField(new ResourceRef(buffer, offset + 420, CRE_SCRIPT_TEAM, "BCS"));
     addField(new ResourceRef(buffer, offset + 428, CRE_SCRIPT_SPECIAL_1, "BCS"));
     addField(new DecNumber(buffer, offset + 436, 2, CRE_ENCHANTMENT_LEVEL));
@@ -1091,7 +1152,8 @@ public final class CreResource extends AbstractStruct
     addField(new Flag(buffer, offset + 440, 4, CRE_FEATS_1, s_feats1));
     addField(new Flag(buffer, offset + 444, 4, CRE_FEATS_2, s_feats2));
     addField(new Flag(buffer, offset + 448, 4, CRE_FEATS_3, s_feats3));
-    addField(new Unknown(buffer, offset + 452, 12));
+	addField(new Flag(buffer, offset + 452, 4, CRE_FEATS_4, s_feats4));
+    addField(new Unknown(buffer, offset + 456, 8));
     addField(new DecNumber(buffer, offset + 464, 1, CRE_MW_BOW));
     addField(new DecNumber(buffer, offset + 465, 1, CRE_SW_CROSSBOW));
     addField(new DecNumber(buffer, offset + 466, 1, CRE_SW_MISSILE));
@@ -1118,7 +1180,38 @@ public final class CreResource extends AbstractStruct
     addField(new DecNumber(buffer, offset + 487, 1, CRE_EXTRA_SMITING));
     addField(new DecNumber(buffer, offset + 488, 1, CRE_EXTRA_TURNING));
     addField(new DecNumber(buffer, offset + 489, 1, CRE_EW_BASTARD_SWORD));
-    addField(new Unknown(buffer, offset + 490, 38));
+	addField(new Unknown(buffer, offset + 490, 1));
+	addField(new DecNumber(buffer, offset + 491, 1, CRE_AUGMENT_SUMMONING));
+	addField(new DecNumber(buffer, offset + 492, 1, CRE_CONCOCT_POTIONS));
+	addField(new DecNumber(buffer, offset + 493, 1, CRE_DEFENSIVE_STANCE));
+	addField(new DecNumber(buffer, offset + 494, 1, CRE_EXTEND_SPELL));
+	addField(new DecNumber(buffer, offset + 495, 1, CRE_FEINT));
+	addField(new DecNumber(buffer, offset + 496, 1, CRE_IMPROVED_SNEAK_ATTACK));
+	addField(new DecNumber(buffer, offset + 497, 1, CRE_IMPROVED_TWO_WEAPON_FIGHTING));
+	addField(new DecNumber(buffer, offset + 498, 1, CRE_IMPROVED_UNARMED_ABILITIES));
+	addField(new DecNumber(buffer, offset + 499, 1, CRE_KENSEI));
+	addField(new DecNumber(buffer, offset + 500, 1, CRE_KNOCKDOWN));
+	addField(new DecNumber(buffer, offset + 501, 1, CRE_LIGHT_ARMOR_MASTERY));
+	addField(new DecNumber(buffer, offset + 502, 1, CRE_MASTER_OF_MAGIC_FORCE));
+	addField(new DecNumber(buffer, offset + 503, 1, CRE_MAXIMIZE_SPELL));
+	addField(new DecNumber(buffer, offset + 504, 1, CRE_MOBILITY));
+	addField(new DecNumber(buffer, offset + 505, 1, CRE_QUICKEN_SPELL));
+	addField(new DecNumber(buffer, offset + 506, 1, CRE_RAPID_RELOAD));
+	addField(new DecNumber(buffer, offset + 507, 1, CRE_SAFE_SPELL));
+	addField(new DecNumber(buffer, offset + 508, 1, CRE_SHIELD_FOCUS));
+	addField(new DecNumber(buffer, offset + 509, 1, CRE_SPRING_ATTACK));
+	addField(new DecNumber(buffer, offset + 510, 1, CRE_TERRIFYING_RAGE));
+	addField(new DecNumber(buffer, offset + 511, 1, CRE_TWO_WEAPON_DEFENSE));
+	addField(new DecNumber(buffer, offset + 512, 1, CRE_WHIRLWIND_ATTACK));
+	addField(new DecNumber(buffer, offset + 513, 1, CRE_NATURAL_SPELL));
+	addField(new DecNumber(buffer, offset + 514, 1, CRE_COUNTERSPELL));
+	addField(new DecNumber(buffer, offset + 515, 1, CRE_EMPOWER_SPELL));
+	addField(new DecNumber(buffer, offset + 516, 1, CRE_PERSISTENT_SPELL));
+	addField(new DecNumber(buffer, offset + 517, 1, CRE_WIDEN_SPELL));
+	addField(new DecNumber(buffer, offset + 518, 1, CRE_MASS_SPELL));
+	addField(new DecNumber(buffer, offset + 519, 1, CRE_MANYSHOT));
+	addField(new DecNumber(buffer, offset + 520, 1, CRE_COMBAT_REFLEXES));
+    addField(new Unknown(buffer, offset + 521, 7));
     addField(new DecNumber(buffer, offset + 528, 1, CRE_ALCHEMY));
     addField(new DecNumber(buffer, offset + 529, 1, CRE_ANIMAL_EMPATHY));
     addField(new DecNumber(buffer, offset + 530, 1, CRE_BLUFF));

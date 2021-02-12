@@ -2184,7 +2184,7 @@ public final class Profile implements FileWatcher.FileWatchListener
 
     addEntry(Key.IS_SUPPORTED_LOG, Type.BOOLEAN, true);
 
-    addEntry(Key.IS_SUPPORTED_LUA, Type.BOOLEAN, isEnhancedEdition());
+    addEntry(Key.IS_SUPPORTED_LUA, Type.BOOLEAN, (isEnhancedEdition() || (engine == Engine.IWD2)));
 
     addEntry(Key.IS_SUPPORTED_MAZE, Type.BOOLEAN, game == Game.PSTEE);
 

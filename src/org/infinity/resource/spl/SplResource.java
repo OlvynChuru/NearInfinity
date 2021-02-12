@@ -116,7 +116,7 @@ public final class SplResource extends AbstractStruct implements Resource, HasCh
                                                "", "", "Hostile", "No LOS required",
                                                "Allow spotting", "Outdoors only", "Simplified duration",
                                                "Trigger/Contingency", "", "", "Non-combat ability (?)", "", "", "",
-                                               "", "", "", ""};
+                                               "", "", "", "", "", "", "ReallyForceSpell;The spell will be cast with the ReallyForceSpell/ReallyForceSpellPoint action.", "ForceSpell;The spell will be cast with the ForceSpell/ForceSpellPoint action.", "Always consumed;The spell will be used up when cast even if bits 28 or 29 are set."};
   public static final String[] s_exclude =
     { "None",
       "Berserker", "Wizard slayer", "Kensai", "Cavalier", "Inquisitor", "Undead hunter",

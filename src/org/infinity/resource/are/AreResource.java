@@ -130,6 +130,9 @@ public final class AreResource extends AbstractStruct implements Resource, HasCh
   public static final String[] s_flag = {"Indoors", "Outdoors", "Day/Night",
                                          "Weather", "City", "Forest", "Dungeon",
                                          "Extended night", "Can rest indoors"};
+  public static final String[] s_flag_iwd2ee = {"Indoors", "Outdoors", "Day/Night",
+                                         "Weather", "City", "Forest", "Dungeon",
+                                         "Extended night", "Can rest indoors", null, null, null, "No teleport;Teleportation, wing buffet, and incorporeal movement do not work in this area."};
   public static final String[] s_flag_torment = {"Indoors", "Hive", "Hive Night", "Clerk's ward",
                                                  "Lower ward", "Ravel's maze", "Baator", "Rubikon",
                                                  "Negative material plane", "Curst", "Carceri",
@@ -617,7 +620,10 @@ public final class AreResource extends AbstractStruct implements Resource, HasCh
     addField(new Flag(buffer, offset + 56, 4, ARE_EDGE_FLAGS_SOUTH, s_edge));
     addField(new ResourceRef(buffer, offset + 60, ARE_AREA_WEST, "ARE"));
     addField(new Flag(buffer, offset + 68, 4, ARE_EDGE_FLAGS_WEST, s_edge));
-    if (Profile.getEngine() == Profile.Engine.PST || Profile.getGame() == Profile.Game.PSTEE) {
+	if (version.toString().equalsIgnoreCase("V9.1")) {
+      addField(new Flag(buffer, offset + 72, 2, ARE_LOCATION,
+                        IdsMapCache.getUpdatedIdsFlags(s_flag_iwd2ee, null, 2, false, false)));
+    } else if (Profile.getEngine() == Profile.Engine.PST || Profile.getGame() == Profile.Game.PSTEE) {
       addField(new Flag(buffer, offset + 72, 2, ARE_LOCATION,
                         IdsMapCache.getUpdatedIdsFlags(s_flag_torment, null, 2, false, false)));
     } else {

@@ -6,6 +6,7 @@ package org.infinity.resource;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumMap;
@@ -34,6 +35,7 @@ import org.infinity.datatype.StringRef;
 import org.infinity.datatype.Summon2daBitmap;
 import org.infinity.datatype.TextString;
 import org.infinity.datatype.Unknown;
+import org.infinity.datatype.UnknownDecimal;
 import org.infinity.datatype.UnsignDecNumber;
 import org.infinity.datatype.UpdateListener;
 import org.infinity.resource.itm.ItmResource;
@@ -71,6 +73,7 @@ public final class EffectFactory
   private static EffectFactory efactory;
   private String[] s_poricon;
   private String[] s_effname;
+  private static String[] s_effname_s;
 
   /**
    * Used in conjunction with {@code getEffectStructure} to address specific fields within
@@ -84,7 +87,11 @@ public final class EffectFactory
     IDX_POWER,                OFS_POWER,
     IDX_PARAM1,               OFS_PARAM1,
     IDX_PARAM1A,              OFS_PARAM1A,
+    IDX_PARAM1A1,             OFS_PARAM1A1,
+    IDX_PARAM1A2,             OFS_PARAM1A2,
     IDX_PARAM1B,              OFS_PARAM1B,
+    IDX_PARAM1B1,             OFS_PARAM1B1,
+    IDX_PARAM1B2,             OFS_PARAM1B2,
     IDX_PARAM2,               OFS_PARAM2,
     IDX_PARAM2A,              OFS_PARAM2A,
     IDX_PARAM2B,              OFS_PARAM2B,
@@ -156,7 +163,7 @@ public final class EffectFactory
     "Unknown", "Unknown", "Unknown", "Unknown", "Unknown",
     "None"
   };
-
+  public static final String[] s_headertype = {"All", "Melee", "Ranged", "Magical", "Launcher"};
   public static final String[] s_visuals = {
     // 0..9
     "None", "Hit abjuration", "Hit alteration", "Hit invocation", "Hit necromancy", "Hit conjuration",
@@ -274,6 +281,39 @@ public final class EffectFactory
     "Yuan-ti",
     // 90..
     "Not yuan-ti", "Outsider", "Not outsider"};
+  public static final String[] s_cretype3 = {
+      // 0..9
+      "Anyone", "Undead", "Not undead", "Fire-dwelling", "Not fire-dwelling", "Humanoid",
+      "Not humanoid", "Animal", "Not animal", "Elemental",
+      // 10..19
+      "Not elemental", "Fungus", "Not fungus", "Huge creature", "Not huge creature", "Elf", "Not elf",
+      "Umber hulk", "Not umber hulk", "Half-elf",
+      // 20..29
+      "Not half-elf", "Humanoid or animal", "Not humanoid or animal", "Blind", "Not blind",
+      "Cold-dwelling", "Not cold-dwelling", "Golem", "Not golem", "Minotaur",
+      // 30..39
+      "Not minotaur", "Undead or fungus", "Not undead or fungus", "Good", "Not good", "Neutral",
+      "Not neutral", "Evil", "Not evil", "Paladin",
+      // 40..49
+      "Not paladin", "Same moral alignment as source", "Not same moral alignment as source", "Source",
+      "Not source", "Water-dwelling", "Not water-dwelling", "Breathing", "Not breathing", "Allies",
+      // 50..59
+      "Not allies", "Enemies", "Not enemies", "Fire or cold dwelling", "Not fire or cold dwelling",
+      "Unnatural", "Not unnatural", "Male", "Not male", "Lawful",
+      // 60..69
+      "Not lawful", "Chaotic", "Not chaotic", "Evasion check", "Orc", "Not orc", "Deaf", "Not deaf",
+      "Summoned creature", "Not summoned creature",
+      // 70..79
+      "Mind flayer", "Not mind flayer", "Silenced", "Not silenced", "Intelligence less than",
+      "Intelligence greater than", "Intelligence less than or equal to",
+      "Intelligence greater than or equal to", "Skald", "Not skald",
+      // 80..89
+      "Near enemies", "Not near enemies", "Drow", "Not drow", "Gray dwarf", "Not gray dwarf",
+      "Daytime", "Not daytime", "Outdoor", "Not outdoor",
+      // 90..99
+      "Keg", "Not keg", "Outsider", "Not outsider", "Nonliving (undead, construct or object)", "Not nonliving", "Mindless (undead, construct, object, shambling mound, or ooze)", "Not mindless", "Drow or duergar", "Not drow or duergar",
+      // 100..109
+      "Light-sensitive (drow, duergar, fungi, shadow, wight, or wraith)", "Not light-sensitive", "Fiend", "Not fiend", "Fiend or undead", "Not Fiend or undead", "Airborne", "Not airborne", "Incorporeal or ethereal", "Not incorporeal or ethereal"};
 
   public static final String[] s_sumanim = {"No animation", "Monster summoning circle",
                                             "Animal summoning circle", "Earth summoning circle",
@@ -524,8 +564,16 @@ public final class EffectFactory
           map.put(EffectEntry.OFS_PARAM1, ofsOpcode + 0x04);
           map.put(EffectEntry.IDX_PARAM1A, idxOpcode + 3);
           map.put(EffectEntry.OFS_PARAM1A, ofsOpcode + 0x04);
+          map.put(EffectEntry.IDX_PARAM1A1, idxOpcode + 3);
+          map.put(EffectEntry.OFS_PARAM1A1, ofsOpcode + 0x04);
+          map.put(EffectEntry.IDX_PARAM1A2, idxOpcode + 4);
+          map.put(EffectEntry.OFS_PARAM1A2, ofsOpcode + 0x05);
           map.put(EffectEntry.IDX_PARAM1B, idxOpcode + 4);
           map.put(EffectEntry.OFS_PARAM1B, ofsOpcode + 0x06);
+          map.put(EffectEntry.IDX_PARAM1B1, idxOpcode + 5);
+          map.put(EffectEntry.OFS_PARAM1B1, ofsOpcode + 0x06);
+          map.put(EffectEntry.IDX_PARAM1B2, idxOpcode + 6);
+          map.put(EffectEntry.OFS_PARAM1B2, ofsOpcode + 0x07);
           map.put(EffectEntry.IDX_PARAM2, idxOpcode + 4);
           map.put(EffectEntry.OFS_PARAM2, ofsOpcode + 0x08);
           map.put(EffectEntry.IDX_PARAM2A, idxOpcode + 4);
@@ -752,6 +800,7 @@ public final class EffectFactory
       throw new Exception("Invalid arguments specified");
     }
   }
+  
 
   /**
    * Central hub for dynamic opcode specific modifications of effect structures.
@@ -787,6 +836,16 @@ public final class EffectFactory
           case 342:     // Override creature data
             return updateOpcode342(struct);
         }
+		if (Profile.getEngine() == Profile.Engine.IWD2) {
+			switch (opcode) {
+				case 288:  // Set spell state
+					return updateOpcode288IWD2(struct);
+				case 500:  // Invoke Lua
+					return updateOpcode500IWD2(struct);
+				case 502:  // Screen Effects
+					return updateOpcode502IWD2(struct);
+			}
+		}
       }
     }
     return false;
@@ -921,7 +980,7 @@ public final class EffectFactory
     }
     return false;
   }
-
+  
   // Effect type "Cast spell on condition" (232)
   private static boolean updateOpcode232(AbstractStruct struct) throws Exception
   {
@@ -1068,6 +1127,806 @@ public final class EffectFactory
           }
           replaceEntry(struct, EffectEntry.IDX_PARAM1, EffectEntry.OFS_PARAM1, newEntry);
           return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  // Effect type "Set Spell State" (288)
+  private static boolean updateOpcode288IWD2(AbstractStruct struct) throws Exception
+  {
+    if (struct != null) {
+      if (Profile.getEngine() == Profile.Engine.IWD2) {
+        int opcode = ((EffectType)getEntry(struct, EffectEntry.IDX_OPCODE)).getValue();
+        if (opcode == 288) {
+			replaceEntry(struct, EffectEntry.IDX_PARAM1, EffectEntry.OFS_PARAM1,
+				new DecNumber(getEntryData(struct, EffectEntry.IDX_PARAM1), 0, 4, EFFECT_PARAMETER_1));
+			Datatype newResource;
+			replaceEntry(struct, EffectEntry.IDX_RESOURCE, EffectEntry.OFS_RESOURCE,
+				new TextString(getEntryData(struct, EffectEntry.IDX_RESOURCE), 0, 8,
+				"Resource"));
+			replaceEntry(struct, EffectEntry.IDX_SAVETYPE, EffectEntry.OFS_SAVETYPE,
+				new Flag(getEntryData(struct, EffectEntry.IDX_SAVETYPE), 0, 4, "Save type", new String[]{"No save", null, null, "Fortitude", "Reflex", "Will"}));
+			replaceEntry(struct, EffectEntry.IDX_SPECIAL, EffectEntry.OFS_SPECIAL,
+				new DecNumber(getEntryData(struct, EffectEntry.IDX_SPECIAL), 0, 4, EFFECT_SPECIAL));
+			int spellStateParam2 = ((IdsBitmap)getEntry(struct, EffectEntry.IDX_PARAM2)).getValue();
+			String spellStateResource = ((TextString)getEntry(struct, EffectEntry.IDX_RESOURCE)).getText();
+			switch(spellStateParam2) {
+				case 190:
+					replaceEntry(struct, EffectEntry.IDX_PARAM1, EffectEntry.OFS_PARAM1,
+						new DecNumber(getEntryData(struct, EffectEntry.IDX_PARAM1), 0, 4, "Value"));
+					replaceEntry(struct, EffectEntry.IDX_SPECIAL, EffectEntry.OFS_SPECIAL,
+                        new Bitmap(getEntryData(struct, EffectEntry.IDX_SPECIAL), 0, 4, "Height property", new String[]{"", "Velocity", "Acceleration", "Minimum Height", "Maximum Height", "Center Height", "Minimum Speed"}));
+				break;
+				case 191:
+					replaceEntry(struct, EffectEntry.IDX_PARAM1, EffectEntry.OFS_PARAM1,
+						new DecNumber(getEntryData(struct, EffectEntry.IDX_PARAM1), 0, 4, "Value"));
+					replaceEntry(struct, EffectEntry.IDX_SPECIAL, EffectEntry.OFS_SPECIAL,
+                        new Bitmap(getEntryData(struct, EffectEntry.IDX_SPECIAL), 0, 4, "Modifier type", new String[]{"Increment", "", "Set % of"}));
+				break;
+				case 192:
+					replaceEntry(struct, EffectEntry.IDX_PARAM1, EffectEntry.OFS_PARAM1,
+						new DecNumber(getEntryData(struct, EffectEntry.IDX_PARAM1), 0, 4, "Value"));
+					replaceEntry(struct, EffectEntry.IDX_SAVETYPE, EffectEntry.OFS_SAVETYPE,
+						new Flag(getEntryData(struct, EffectEntry.IDX_SAVETYPE), 0, 4, "Save type", new String[]{"No save", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
+						null, null, null, null, null, null, null, null,
+						"This weapon only", null, "Rogue levels unnecessary;The effect will give the character sneak attack damage even if they aren't a rogue."}));
+				break;
+				case 193:
+					replaceEntry(struct, EffectEntry.IDX_PARAM1, EffectEntry.OFS_PARAM1,
+						new DecNumber(getEntryData(struct, EffectEntry.IDX_PARAM1), 0, 4, "Value"));
+					replaceEntry(struct, EffectEntry.IDX_SPECIAL, EffectEntry.OFS_SPECIAL,
+                        new Bitmap(getEntryData(struct, EffectEntry.IDX_SPECIAL), 0, 4, "Modifier type", new String[]{"Wizard spell duration modifier", "Priest spell duration modifier", "Casting time modifier"}));
+				break;
+				case 194:
+					replaceEntry(struct, EffectEntry.IDX_PARAM1, EffectEntry.OFS_PARAM1,
+						new DecNumber(getEntryData(struct, EffectEntry.IDX_PARAM1), 0, 4, "Value"));
+				break;
+				case 195:
+					replaceEntry(struct, EffectEntry.IDX_PARAM1, EffectEntry.OFS_PARAM1,
+						new DecNumber(getEntryData(struct, EffectEntry.IDX_PARAM1), 0, 4, "Value"));
+					replaceEntry(struct, EffectEntry.IDX_SAVETYPE, EffectEntry.OFS_SAVETYPE,
+						new Flag(getEntryData(struct, EffectEntry.IDX_SAVETYPE), 0, 4, "Save type", new String[]{"No save", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
+						null, null, null, null, null, null, null, null,
+						"This weapon only"}));
+					replaceEntry(struct, EffectEntry.IDX_SPECIAL, EffectEntry.OFS_SPECIAL,
+                        new Bitmap(getEntryData(struct, EffectEntry.IDX_SPECIAL), 0, 4, "Item type (-1 for all types)", ItmResource.s_categories));
+				break;
+				case 196:
+					replaceEntry(struct, EffectEntry.IDX_PARAM1, EffectEntry.OFS_PARAM1,
+						new DecNumber(getEntryData(struct, EffectEntry.IDX_PARAM1), 0, 4, "Value"));
+					replaceEntry(struct, EffectEntry.IDX_SAVETYPE, EffectEntry.OFS_SAVETYPE,
+						new Flag(getEntryData(struct, EffectEntry.IDX_SAVETYPE), 0, 4, "Save type", new String[]{"Extra offhand attack", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
+						null, null, null, null, null, null, null, null,
+						"Extra mainhand attack;The extra attack will be with the main hand when dual-wielding.", "Extra manyshot attack"}));
+					replaceEntry(struct, EffectEntry.IDX_SPECIAL, EffectEntry.OFS_SPECIAL,
+                        new Bitmap(getEntryData(struct, EffectEntry.IDX_SPECIAL), 0, 4, "Header type", s_headertype));
+				break;
+				case 207:
+					replaceEntry(struct, EffectEntry.IDX_PARAM1, EffectEntry.OFS_PARAM1,
+						new DecNumber(getEntryData(struct, EffectEntry.IDX_PARAM1), 0, 4, "# creatures"));
+					replaceEntry(struct, EffectEntry.IDX_RESOURCE, EffectEntry.OFS_RESOURCE,
+						new ResourceRef(getEntryData(struct, EffectEntry.IDX_RESOURCE), 0,
+                        EFFECT_RESOURCE, "CRE"));
+					replaceEntry(struct, EffectEntry.IDX_SAVETYPE, EffectEntry.OFS_SAVETYPE,
+						new Flag(getEntryData(struct, EffectEntry.IDX_SAVETYPE), 0, 4, "Save type", new String[]{"Extra offhand attack", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
+						null, null, null, null, null, null, null, null,
+						null, null, null, null, "Summoned fiend"}));
+					replaceEntry(struct, EffectEntry.IDX_SPECIAL, EffectEntry.OFS_SPECIAL,
+                        new DecNumber(getEntryData(struct, EffectEntry.IDX_SPECIAL), 0, 4, "Unused"));
+				break;
+				case 213:
+					replaceEntry(struct, EffectEntry.IDX_PARAM1, EffectEntry.OFS_PARAM1,
+						new IdsBitmap(getEntryData(struct, EffectEntry.IDX_PARAM1), 0, 4, "New damage type", "DAMAGES.IDS"));
+				break;
+				case 214:
+					replaceEntry(struct, EffectEntry.IDX_PARAM1, EffectEntry.OFS_PARAM1,
+						new IdsBitmap(getEntryData(struct, EffectEntry.IDX_PARAM1), 0, 4, "Damage type", "DAMAGES.IDS"));
+					replaceEntry(struct, EffectEntry.IDX_SAVETYPE, EffectEntry.OFS_SAVETYPE,
+						new Flag(getEntryData(struct, EffectEntry.IDX_SAVETYPE), 0, 4, "Save type", new String[]{"Immune to damage type", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
+						null, null, null, null, null, null, null, null,
+						"Heal from damage type"}));
+				break;
+				case 223:
+				case 224:
+				case 227:
+				case 228:
+					replaceEntry(struct, EffectEntry.IDX_RESOURCE, EffectEntry.OFS_RESOURCE,
+						new ResourceRef(getEntryData(struct, EffectEntry.IDX_RESOURCE), 0,
+                        EFFECT_RESOURCE, "SPL"));
+				break;
+				case 225:
+					replaceEntry(struct, EffectEntry.IDX_RESOURCE, EffectEntry.OFS_RESOURCE,
+						new ResourceRef(getEntryData(struct, EffectEntry.IDX_RESOURCE), 0,
+                        EFFECT_RESOURCE, "SPL"));
+					replaceEntry(struct, EffectEntry.IDX_SAVETYPE, EffectEntry.OFS_SAVETYPE,
+						new Flag(getEntryData(struct, EffectEntry.IDX_SAVETYPE), 0, 4, "Save type", new String[]{"No save", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
+						null, null, null, null, null, null, null, null,
+						null, null, null, null, "On being hit effect;Triggers on being hit rather than on hitting another creature.", "Effect targets attacker", "You are effect source", "On critical hit only", null, null, "Not triggered by whirlwind attack"}));
+					replaceEntry(struct, EffectEntry.IDX_SPECIAL, EffectEntry.OFS_SPECIAL,
+                        new UnknownDecimal(getEntryData(struct, EffectEntry.IDX_SPECIAL), 0, 4, "Header type/# uses"));
+				break;
+				case 231:
+					replaceEntry(struct, EffectEntry.IDX_PARAM1, EffectEntry.OFS_PARAM1,
+						new Bitmap(getEntryData(struct, EffectEntry.IDX_PARAM1), 0, 4, "AC against attacks of opportunity", new String[]{"Immune", "+1", "+2", "+3", "+4", "+5", "+6", "+7", "+8", "+9", "+10"}));
+					replaceEntry(struct, EffectEntry.IDX_SAVETYPE, EffectEntry.OFS_SAVETYPE,
+						new Flag(getEntryData(struct, EffectEntry.IDX_SAVETYPE), 0, 4, "Save type", new String[]{"Count all attacks of opportunity", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
+						null, null, null, null, null, null, null, null,
+						"Fleeing attack opportunity", "Ranged attack opportunity", "Spell cast attack opportunity"}));
+				break;
+				case 234:
+					replaceEntry(struct, EffectEntry.IDX_PARAM1, EffectEntry.OFS_PARAM1,
+						new DecNumber(getEntryData(struct, EffectEntry.IDX_PARAM1), 0, 4, "Max spell level that can be quickened"));
+				break;
+				case 235:
+					replaceEntry(struct, EffectEntry.IDX_PARAM1, EffectEntry.OFS_PARAM1,
+						new DecNumber(getEntryData(struct, EffectEntry.IDX_PARAM1), 0, 4, "Max spell level that can be made safe"));
+				break;
+				case 236:
+				case 237:
+					replaceEntry(struct, EffectEntry.IDX_PARAM1, EffectEntry.OFS_PARAM1,
+						new DecNumber(getEntryData(struct, EffectEntry.IDX_PARAM1), 0, 4, "DC modifier"));
+					replaceEntry(struct, EffectEntry.IDX_RESOURCE, EffectEntry.OFS_RESOURCE,
+						new ResourceRef(getEntryData(struct, EffectEntry.IDX_RESOURCE), 0,
+                        EFFECT_RESOURCE, "SPL"));
+				break;
+				case 238:
+					replaceEntry(struct, EffectEntry.IDX_PARAM1, EffectEntry.OFS_PARAM1,
+						new DecNumber(getEntryData(struct, EffectEntry.IDX_PARAM1), 0, 4, "Max spell level that can be maximized"));
+				break;
+				case 239:
+					replaceEntry(struct, EffectEntry.IDX_PARAM1, EffectEntry.OFS_PARAM1,
+						new DecNumber(getEntryData(struct, EffectEntry.IDX_PARAM1), 0, 4, "Max spell level that can be extended"));
+				break;
+				case 240:
+					replaceEntry(struct, EffectEntry.IDX_PARAM1, EffectEntry.OFS_PARAM1,
+						new DecNumber(getEntryData(struct, EffectEntry.IDX_PARAM1), 0, 4, "Spell level reduction"));
+					replaceEntry(struct, EffectEntry.IDX_RESOURCE, EffectEntry.OFS_RESOURCE,
+						new TextString(getEntryData(struct, EffectEntry.IDX_RESOURCE), 0, 8, "Metamagic Lua function"));
+				break;
+				case 241:
+					replaceEntry(struct, EffectEntry.IDX_PARAM1, EffectEntry.OFS_PARAM1,
+						new Bitmap(getEntryData(struct, EffectEntry.IDX_PARAM1), 0, 4, "Category", ItmResource.s_categories));
+					replaceEntry(struct, EffectEntry.IDX_SAVETYPE, EffectEntry.OFS_SAVETYPE,
+						new Flag(getEntryData(struct, EffectEntry.IDX_SAVETYPE), 0, 4, "Save type", new String[]{"Count all attacks of opportunity", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
+						null, null, null, null, null, null, null, null,
+						"Critical item", "Two-handed", "Droppable", "Displayable", "Cursed", "Not copyable", "Magical", "Left-handed",
+						"Silver", "Cold iron", "Off-handed", "Conversable"}));
+					replaceEntry(struct, EffectEntry.IDX_SPECIAL, EffectEntry.OFS_SPECIAL,
+                        new Bitmap(getEntryData(struct, EffectEntry.IDX_SPECIAL), 0, 4, "Special category", new String[]{"", "Armor", "Robe", "Shield", "Ranged", "Melee", "Fist", "Launcher"}));
+				break;
+				case 243:
+					replaceEntry(struct, EffectEntry.IDX_PARAM1, EffectEntry.OFS_PARAM1,
+						new DecNumber(getEntryData(struct, EffectEntry.IDX_PARAM1), 0, 4, "DC modifier"));
+					replaceEntry(struct, EffectEntry.IDX_SPECIAL, EffectEntry.OFS_SPECIAL,
+                        new PriTypeBitmap(getEntryData(struct, EffectEntry.IDX_SPECIAL), 0, 4, "School of magic"));
+				break;
+				case 246:
+					replaceEntry(struct, EffectEntry.IDX_PARAM1, EffectEntry.OFS_PARAM1,
+						new DecNumber(getEntryData(struct, EffectEntry.IDX_PARAM1), 0, 4, "Value"));
+					replaceEntry(struct, EffectEntry.IDX_SAVETYPE, EffectEntry.OFS_SAVETYPE,
+						new Flag(getEntryData(struct, EffectEntry.IDX_SAVETYPE), 0, 4, "Save type", new String[]{"Count all attacks of opportunity", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
+						null, null, null, null, null, null, null, null,
+						"Match projectile index", "Match projectile type", "Match internal projectile type", "Limited uses", "Consume use on attack", null, null, null,
+						"Modify projectile width;Affects fireball radius and cone width", "Modify projectile speed", "Replace projectile", "Modify projectile length;Affects skull trap trigger radius and cone length"}));
+					replaceEntry(struct, EffectEntry.IDX_SPECIAL, EffectEntry.OFS_SPECIAL,
+                        new UnknownDecimal(getEntryData(struct, EffectEntry.IDX_SPECIAL), 0, 4, "Condition/# uses"));
+				break;
+				case 250:
+					newResource = new TextString(getEntryData(struct, EffectEntry.IDX_RESOURCE), 0, 8, "Lua function");
+					newResource.addUpdateListener((UpdateListener)struct.getField(0));
+					replaceEntry(struct, EffectEntry.IDX_RESOURCE, EffectEntry.OFS_RESOURCE,
+						newResource);
+					if (spellStateResource.equalsIgnoreCase("MESPLSEQ")) {
+						replaceEntry(struct, EffectEntry.IDX_PARAM1, EffectEntry.OFS_PARAM1,
+							new UnknownDecimal(getEntryData(struct, EffectEntry.IDX_PARAM1), 0, 4, "# spells/Max spell level"));
+						replaceEntry(struct, EffectEntry.IDX_SPECIAL, EffectEntry.OFS_SPECIAL,
+							new DecNumber(getEntryData(struct, EffectEntry.IDX_SPECIAL), 0, 4, "Duration"));
+					}
+				break;
+				case 251:
+					newResource = new TextString(getEntryData(struct, EffectEntry.IDX_RESOURCE), 0, 8, "Lua function");
+					newResource.addUpdateListener((UpdateListener)struct.getField(0));
+					replaceEntry(struct, EffectEntry.IDX_RESOURCE, EffectEntry.OFS_RESOURCE,
+						newResource);
+					replaceEntry(struct, EffectEntry.IDX_SAVETYPE, EffectEntry.OFS_SAVETYPE,
+						new Flag(getEntryData(struct, EffectEntry.IDX_SAVETYPE), 0, 4, "Save type", new String[]{"Count all attacks of opportunity", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
+						null, null, null, null, null, "Don't call typeMutator", "Don't call projectileMutator", "Don't call effectMutator"}));
+					if (spellStateResource.equalsIgnoreCase("EXEMPSPL") || spellStateResource.equalsIgnoreCase("EXEXTSPL") || spellStateResource.equalsIgnoreCase("EXMASSPL") || spellStateResource.equalsIgnoreCase("EXMAXSPL") || spellStateResource.equalsIgnoreCase("EXPERSPL") || spellStateResource.equalsIgnoreCase("EXQUISPL") || spellStateResource.equalsIgnoreCase("EXSAFSPL") || spellStateResource.equalsIgnoreCase("EXWIDSPL")) {
+						replaceEntry(struct, EffectEntry.IDX_PARAM1, EffectEntry.OFS_PARAM1,
+							new DecNumber(getEntryData(struct, EffectEntry.IDX_PARAM1), 0, 4, "Spell level adjust"));
+						replaceEntry(struct, EffectEntry.IDX_SPECIAL, EffectEntry.OFS_SPECIAL,
+							new DecNumber(getEntryData(struct, EffectEntry.IDX_SPECIAL), 0, 4, "# uses"));
+					}
+			}
+			return true;
+        }
+      }
+    }
+    return false;
+  }
+  
+  // Effect type "IEex: Invoke Lua" (500)
+  private static boolean updateOpcode500IWD2(AbstractStruct struct) throws Exception
+  {
+    if (struct != null) {
+      if (Profile.getEngine() == Profile.Engine.IWD2) {
+        int opcode = ((EffectType)getEntry(struct, EffectEntry.IDX_OPCODE)).getValue();
+        if (opcode == 500) {
+			replaceEntry(struct, EffectEntry.IDX_PARAM1, EffectEntry.OFS_PARAM1,
+				new DecNumber(getEntryData(struct, EffectEntry.IDX_PARAM1), 0, 4, EFFECT_PARAMETER_1));
+			replaceEntry(struct, EffectEntry.IDX_PARAM2, EffectEntry.OFS_PARAM2,
+				new DecNumber(getEntryData(struct, EffectEntry.IDX_PARAM2), 0, 4, EFFECT_PARAMETER_2));
+			replaceEntry(struct, EffectEntry.IDX_SAVETYPE, EffectEntry.OFS_SAVETYPE,
+				new Flag(getEntryData(struct, EffectEntry.IDX_SAVETYPE), 0, 4, "Save type", new String[]{"No save", null, null, "Fortitude", "Reflex", "Will"}));
+			replaceEntry(struct, EffectEntry.IDX_SPECIAL, EffectEntry.OFS_SPECIAL,
+				new DecNumber(getEntryData(struct, EffectEntry.IDX_SPECIAL), 0, 4, EFFECT_SPECIAL));
+			int param1 = ((IsNumeric)getEntry(struct, EffectEntry.IDX_PARAM1)).getValue();
+			int param2 = ((IsNumeric)getEntry(struct, EffectEntry.IDX_PARAM2)).getValue();
+			int special = ((IsNumeric)getEntry(struct, EffectEntry.IDX_SPECIAL)).getValue();
+			String resourceValue = ((TextString)getEntry(struct, EffectEntry.IDX_RESOURCE)).getText();
+			switch(resourceValue) {
+				case "EXDAMAGE":
+					replaceEntry(struct, EffectEntry.IDX_PARAM1, EffectEntry.OFS_PARAM1,
+						new UnknownDecimal(getEntryData(struct, EffectEntry.IDX_PARAM1), 0, 4, "Bonus/Dice size/Dice thrown/Proficiency"));
+					if (ResourceFactory.resourceExists("REALDMG.IDS")) {
+						replaceEntry(struct, EffectEntry.IDX_PARAM2, EffectEntry.OFS_PARAM2,
+							new IdsBitmap(getEntryData(struct, EffectEntry.IDX_PARAM2), 0, 4, "Mode/Damage type", "REALDMG.IDS"));
+					} else {
+						replaceEntry(struct, EffectEntry.IDX_PARAM2, EffectEntry.OFS_PARAM2,
+							new UnknownDecimal(getEntryData(struct, EffectEntry.IDX_PARAM2), 0, 4, "Mode/Damage type"));
+					}
+					replaceEntry(struct, EffectEntry.IDX_SAVETYPE, EffectEntry.OFS_SAVETYPE,
+						new Flag(getEntryData(struct, EffectEntry.IDX_SAVETYPE), 0, 4, "Save type", new String[]{"No save", null, null, null, null, null, null, null, null, 
+						              null, null, "Fortitude;Use this instead of bit 2.", "Reflex;Use this instead of bit 3.", "Will;Use this instead of bit 4.", null, null, null,
+									  "Use damage multipliers", "Melee attack", "Ranged attack", "Can sneak attack;If bits 17 and 18 aren't set, you need spellstate 232 in order to sneak attack.", null, "Drain hit points to maximum", "Drain hit points", "Can sneak attack;Works even if bits 17 and 18 aren't set.", "Sneak attack only;Deals no damage except on a sneak attack.", "Damage reduction;The damage is reduced by the target's damage reduction."}));
+					replaceEntry(struct, EffectEntry.IDX_SPECIAL, EffectEntry.OFS_SPECIAL,
+						new UnknownDecimal(getEntryData(struct, EffectEntry.IDX_SPECIAL), 0, 4, "Bonus stat/Multiplier/Divisor/Save bonus stat"));
+				break;
+				case "EXMODMEM":
+					replaceEntry(struct, EffectEntry.IDX_PARAM1, EffectEntry.OFS_PARAM1,
+						new DecNumber(getEntryData(struct, EffectEntry.IDX_PARAM1), 0, 4, "Spells restored (removed if negative)"));
+					replaceEntry(struct, EffectEntry.IDX_PARAM2, EffectEntry.OFS_PARAM2,
+						new DecNumber(getEntryData(struct, EffectEntry.IDX_PARAM2), 0, 4, "Highest spell level"));
+					replaceEntry(struct, EffectEntry.IDX_SAVETYPE, EffectEntry.OFS_SAVETYPE,
+						new Flag(getEntryData(struct, EffectEntry.IDX_SAVETYPE), 0, 4, "Save type", new String[]{"No save", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
+						null, null, null, null, null, null, null, null,
+						"Restore bard spells", "Restore cleric spells", "Restore druid spells", "Restore paladin spells", "Restore ranger spells", "Restore sorcerer spells", "Restore wizard spells", "Restore domain spells", 
+						null, "Restore specific spell;Specified by resource 2 (in an EFF file).", null, "Generate feedback"}));
+					replaceEntry(struct, EffectEntry.IDX_SPECIAL, EffectEntry.OFS_SPECIAL,
+                        new DecNumber(getEntryData(struct, EffectEntry.IDX_SPECIAL), 0, 4, "Lowest spell level"));
+				break;
+				case "MEAOESP2":	
+					replaceEntry(struct, EffectEntry.IDX_PARAM1, EffectEntry.OFS_PARAM1,
+						new TextString(getEntryData(struct, EffectEntry.IDX_PARAM1), 0, 4, "Resource (first four letters)"));
+					replaceEntry(struct, EffectEntry.IDX_PARAM2, EffectEntry.OFS_PARAM2,
+						new TextString(getEntryData(struct, EffectEntry.IDX_PARAM2), 0, 4, "Resource (last four letters)"));
+					replaceEntry(struct, EffectEntry.IDX_SAVETYPE, EffectEntry.OFS_SAVETYPE,
+						new Flag(getEntryData(struct, EffectEntry.IDX_SAVETYPE), 0, 4, "Save type", new String[]{"No save", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
+						null, null, null, null, null, null, null, "Ignore non-evil creatures",
+						"Hit all targets in area;If unset, the spell will only hit a single, random target in the area.", "Target random point", "Cast by target", null, null, "Ignore allies", "Ignore blue-circled", "Ignore enemies", 
+						"Ignore target", "Hit nearest target;Only the nearest valid target will be hit.", "Check LOS;Only creatures the source can see can be hit.", null, null, null, "Don't target creatures;Used with bit 17."}));
+					replaceEntry(struct, EffectEntry.IDX_SPECIAL, EffectEntry.OFS_SPECIAL,
+                        new DecNumber(getEntryData(struct, EffectEntry.IDX_SPECIAL), 0, 4, "Radius"));
+				break;
+				case "MEHEALIN":
+					replaceEntry(struct, EffectEntry.IDX_PARAM1, EffectEntry.OFS_PARAM1,
+						new UnknownDecimal(getEntryData(struct, EffectEntry.IDX_PARAM1), 0, 4, "Bonus/Unused/Dice size/Dice thrown"));
+					replaceEntry(struct, EffectEntry.IDX_PARAM2, EffectEntry.OFS_PARAM2,
+						new Bitmap(getEntryData(struct, EffectEntry.IDX_PARAM2), 0, 4, "Modifier type", new String[]{"Increment", "Set", "Increment % of", "Lay on hands",
+                                        "Wholeness of body", "Lathander's renewal"}));
+				break;
+				case "MESTATSP":
+					if (param2 > 65535) {
+						replaceEntry(struct, EffectEntry.IDX_PARAM2, EffectEntry.OFS_PARAM2,
+							new UnknownDecimal(getEntryData(struct, EffectEntry.IDX_PARAM2), 0, 4, "Scaling index/Read size"));
+						replaceEntry(struct, EffectEntry.IDX_PARAM1, EffectEntry.OFS_PARAM1,
+							new DecNumber(getEntryData(struct, EffectEntry.IDX_PARAM1), 0, 4, "Read offset"));
+					} else {
+						if (param1 > 65535) {
+							replaceEntry(struct, EffectEntry.IDX_PARAM1, EffectEntry.OFS_PARAM1,
+								new UnknownDecimal(getEntryData(struct, EffectEntry.IDX_PARAM1), 0, 4, "Check stat/Unused/Other stat/Subtracted stat"));
+						} else {
+							replaceEntry(struct, EffectEntry.IDX_PARAM1, EffectEntry.OFS_PARAM1,
+								new IdsBitmap(getEntryData(struct, EffectEntry.IDX_PARAM1), 0, 4, "Check stat", "STATS.IDS"));
+						}
+						replaceEntry(struct, EffectEntry.IDX_PARAM2, EffectEntry.OFS_PARAM2,
+							new DecNumber(getEntryData(struct, EffectEntry.IDX_PARAM2), 0, 4, "Scaling index"));
+					}
+					replaceEntry(struct, EffectEntry.IDX_SAVETYPE, EffectEntry.OFS_SAVETYPE,
+						new Flag(getEntryData(struct, EffectEntry.IDX_SAVETYPE), 0, 4, "Save type", new String[]{"No save", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
+						null, null, null, null, null, null, null, null,
+						"Check Improved Wild Shape"}));
+					replaceEntry(struct, EffectEntry.IDX_SPECIAL, EffectEntry.OFS_SPECIAL,
+                        new DecNumber(getEntryData(struct, EffectEntry.IDX_SPECIAL), 0, 4, "Stat value modifier"));
+				break;
+				case "MESTATSC":
+				case "MEHALFTH":
+					if (param1 > 65535) {
+						replaceEntry(struct, EffectEntry.IDX_PARAM1, EffectEntry.OFS_PARAM1,
+							new UnknownDecimal(getEntryData(struct, EffectEntry.IDX_PARAM1), 0, 4, "Check stat/Unused/Other stat/Subtracted stat"));
+					} else {
+						replaceEntry(struct, EffectEntry.IDX_PARAM1, EffectEntry.OFS_PARAM1,
+							new IdsBitmap(getEntryData(struct, EffectEntry.IDX_PARAM1), 0, 4, "Check stat", "STATS.IDS"));
+					}
+					if (param2 > 65535) {
+						replaceEntry(struct, EffectEntry.IDX_PARAM2, EffectEntry.OFS_PARAM2,
+							new UnknownDecimal(getEntryData(struct, EffectEntry.IDX_PARAM2), 0, 4, "Scaling index/Unused/Check race/Check subrace"));
+					} else {
+						replaceEntry(struct, EffectEntry.IDX_PARAM2, EffectEntry.OFS_PARAM2,
+							new DecNumber(getEntryData(struct, EffectEntry.IDX_PARAM2), 0, 4, "Scaling index"));
+					}
+					replaceEntry(struct, EffectEntry.IDX_SAVETYPE, EffectEntry.OFS_SAVETYPE,
+						new Flag(getEntryData(struct, EffectEntry.IDX_SAVETYPE), 0, 4, "Save type", new String[]{"No save", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
+						null, null, null, null, null, null, null, null,
+						null, null, null, null, null, "Check race"}));
+					replaceEntry(struct, EffectEntry.IDX_SPECIAL, EffectEntry.OFS_SPECIAL,
+                        new IdsBitmap(getEntryData(struct, EffectEntry.IDX_SPECIAL), 0, 4, "Modified stat", "STATS.IDS"));
+				break;
+				case "MEEXHIT":	
+				case "MEONHIT":	
+					if (ResourceFactory.resourceExists("USONHITI.IDS")) {
+						replaceEntry(struct, EffectEntry.IDX_PARAM2, EffectEntry.OFS_PARAM2,
+							new IdsBitmap(getEntryData(struct, EffectEntry.IDX_PARAM2), 0, 4, "Specific weapon group", "USONHITI.IDS"));
+					}
+					replaceEntry(struct, EffectEntry.IDX_SPECIAL, EffectEntry.OFS_SPECIAL,
+                        new Bitmap(getEntryData(struct, EffectEntry.IDX_SPECIAL), 0, 4, "Header type", s_headertype));
+				break;
+				case "MESAFESP":	
+					replaceEntry(struct, EffectEntry.IDX_SAVETYPE, EffectEntry.OFS_SAVETYPE,
+						new Flag(getEntryData(struct, EffectEntry.IDX_SAVETYPE), 0, 4, "Save type", new String[]{"No save", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
+						null, null, null, null, null, null, null, null,
+						"No feedback;Won't display an \"Unaffected by effects of \" message.", "Allow absorption;Used with spellstate 214."}));
+				break;
+				case "MESPLPRT":
+					switch(special) {
+						case 0:
+							replaceEntry(struct, EffectEntry.IDX_PARAM2, EffectEntry.OFS_PARAM2,
+								new Bitmap(getEntryData(struct, EffectEntry.IDX_PARAM2), 0, 4, "Effect", s_effname_s));
+						break;
+						case 1:
+							replaceEntry(struct, EffectEntry.IDX_PARAM1, EffectEntry.OFS_PARAM1,
+								new TextString(getEntryData(struct, EffectEntry.IDX_PARAM1), 0, 4, "Resource (first four letters)"));
+							replaceEntry(struct, EffectEntry.IDX_PARAM2, EffectEntry.OFS_PARAM2,
+								new TextString(getEntryData(struct, EffectEntry.IDX_PARAM2), 0, 4, "Resource (last four letters)"));
+						break;
+						case 2:
+							replaceEntry(struct, EffectEntry.IDX_PARAM2, EffectEntry.OFS_PARAM2,
+								new IdsBitmap(getEntryData(struct, EffectEntry.IDX_PARAM2), 0, 4, "State", "STATE.IDS"));
+						break;
+						case 3:
+							replaceEntry(struct, EffectEntry.IDX_PARAM2, EffectEntry.OFS_PARAM2,
+								new IdsBitmap(getEntryData(struct, EffectEntry.IDX_PARAM2), 0, 4, "State", "SPLSTATE.IDS"));
+						break;
+						case 4:
+							replaceEntry(struct, EffectEntry.IDX_PARAM1, EffectEntry.OFS_PARAM1,
+								new DecNumber(getEntryData(struct, EffectEntry.IDX_PARAM1), 0, 4, "Value"));
+							replaceEntry(struct, EffectEntry.IDX_PARAM2, EffectEntry.OFS_PARAM2,
+								new IdsBitmap(getEntryData(struct, EffectEntry.IDX_PARAM2), 0, 4, "Stat", "STATS.IDS"));
+						break;
+						case 5:
+							replaceEntry(struct, EffectEntry.IDX_PARAM1, EffectEntry.OFS_PARAM1,
+								new DecNumber(getEntryData(struct, EffectEntry.IDX_PARAM1), 0, 4, "Value"));
+							replaceEntry(struct, EffectEntry.IDX_PARAM2, EffectEntry.OFS_PARAM2,
+								new UnknownDecimal(getEntryData(struct, EffectEntry.IDX_PARAM2), 0, 4, "Offset/Unused/Read size/Operator"));
+						break;
+						case 6:
+							replaceEntry(struct, EffectEntry.IDX_PARAM2, EffectEntry.OFS_PARAM2,
+								new IdsBitmap(getEntryData(struct, EffectEntry.IDX_PARAM2), 0, 4, "Race", "RACE.IDS"));
+						break;
+						case 7:
+							replaceEntry(struct, EffectEntry.IDX_PARAM2, EffectEntry.OFS_PARAM2,
+								new IdsBitmap(getEntryData(struct, EffectEntry.IDX_PARAM2), 0, 4, "General", "GENERAL.IDS"));
+						break;
+					}
+					replaceEntry(struct, EffectEntry.IDX_SAVETYPE, EffectEntry.OFS_SAVETYPE,
+						new Flag(getEntryData(struct, EffectEntry.IDX_SAVETYPE), 0, 4, "Save type", new String[]{"No save", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
+						null, null, null, null, null, null, null, null,
+						"No feedback;Won't display an \"Unaffected by effects of \" message.", "Check source for condition", null, null, "Invert condition;The spell will be blocked if the condition is not met."}));
+					replaceEntry(struct, EffectEntry.IDX_SPECIAL, EffectEntry.OFS_SPECIAL,
+                        new Bitmap(getEntryData(struct, EffectEntry.IDX_SPECIAL), 0, 4, "Condition", new String[]{"Has protection from effect", "Has protection from spell", "Has state", "Has spell state",
+                        "Check stat", "Check offset", "Has race", "Has general"}));
+				break;
+				case "MESPLPR2":
+					replaceEntry(struct, EffectEntry.IDX_PARAM2, EffectEntry.OFS_PARAM2,
+                        new Bitmap(getEntryData(struct, EffectEntry.IDX_PARAM2), 0, 4, "Creature type", s_cretype3));
+					replaceEntry(struct, EffectEntry.IDX_SAVETYPE, EffectEntry.OFS_SAVETYPE,
+						new Flag(getEntryData(struct, EffectEntry.IDX_SAVETYPE), 0, 4, "Save type", new String[]{"No save", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
+						null, null, null, null, null, null, null, null,
+						"No feedback;Won't display an \"Unaffected by effects of \" message."}));
+				break;
+				case "MECLSCAS":
+				case "MESUMCAS":
+				case "MEONCAST":
+				case "MEPALSPL":
+				case "MEPOLYMO":
+				case "MEERUPT":
+				case "MEERUPT2":
+				case "MEWOFOST":
+				case "MESPELL":
+					replaceEntry(struct, EffectEntry.IDX_PARAM1, EffectEntry.OFS_PARAM1,
+						new TextString(getEntryData(struct, EffectEntry.IDX_PARAM1), 0, 4, "Resource (first four letters)"));
+					replaceEntry(struct, EffectEntry.IDX_PARAM2, EffectEntry.OFS_PARAM2,
+						new TextString(getEntryData(struct, EffectEntry.IDX_PARAM2), 0, 4, "Resource (last four letters)"));
+				break;
+				case "MEPSTACK":
+					replaceEntry(struct, EffectEntry.IDX_PARAM1, EffectEntry.OFS_PARAM1,
+						new TextString(getEntryData(struct, EffectEntry.IDX_PARAM1), 0, 4, "Resource (first four letters)"));
+					replaceEntry(struct, EffectEntry.IDX_PARAM2, EffectEntry.OFS_PARAM2,
+						new TextString(getEntryData(struct, EffectEntry.IDX_PARAM2), 0, 4, "Resource (last four letters)"));
+					replaceEntry(struct, EffectEntry.IDX_SAVETYPE, EffectEntry.OFS_SAVETYPE,
+						new Flag(getEntryData(struct, EffectEntry.IDX_SAVETYPE), 0, 4, "Save type", new String[]{"No save", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
+						null, null, null, null, null, null, null, null,
+						"Remove sourceless effects", "Remove school"}));
+					replaceEntry(struct, EffectEntry.IDX_SPECIAL, EffectEntry.OFS_SPECIAL,
+                        new PriTypeBitmap(getEntryData(struct, EffectEntry.IDX_SPECIAL), 0, 4, "School of magic"));
+				break;
+				case "MEREMOPC":
+					int savetypeValue = ((Flag)getEntry(struct, EffectEntry.IDX_SAVETYPE)).getValue();
+					if ((savetypeValue & 0x10000) > 0) {
+						replaceEntry(struct, EffectEntry.IDX_PARAM1, EffectEntry.OFS_PARAM1,
+							new TextString(getEntryData(struct, EffectEntry.IDX_PARAM1), 0, 4, "Resource (first four letters)"));
+						replaceEntry(struct, EffectEntry.IDX_PARAM2, EffectEntry.OFS_PARAM2,
+							new TextString(getEntryData(struct, EffectEntry.IDX_PARAM2), 0, 4, "Resource (last four letters)"));
+					} else {
+						replaceEntry(struct, EffectEntry.IDX_PARAM1, EffectEntry.OFS_PARAM1,
+							new Bitmap(getEntryData(struct, EffectEntry.IDX_PARAM1), 0, 4, "Match effect", s_effname_s));
+						replaceEntry(struct, EffectEntry.IDX_PARAM2, EffectEntry.OFS_PARAM2,
+							new DecNumber(getEntryData(struct, EffectEntry.IDX_PARAM2), 0, 4, "Match parameter2"));
+					}
+					replaceEntry(struct, EffectEntry.IDX_SAVETYPE, EffectEntry.OFS_SAVETYPE,
+						new Flag(getEntryData(struct, EffectEntry.IDX_SAVETYPE), 0, 4, "Save type", new String[]{"No save", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
+						null, null, null, null, null, null, null, null,
+						"Remove resource"}));
+					replaceEntry(struct, EffectEntry.IDX_SPECIAL, EffectEntry.OFS_SPECIAL,
+                        new DecNumber(getEntryData(struct, EffectEntry.IDX_SPECIAL), 0, 4, "Match special"));
+				break;
+				case "MESTATRO":
+					replaceEntry(struct, EffectEntry.IDX_PARAM1, EffectEntry.OFS_PARAM1,
+						new TextString(getEntryData(struct, EffectEntry.IDX_PARAM1), 0, 4, "Resource (first four letters)"));
+					replaceEntry(struct, EffectEntry.IDX_PARAM2, EffectEntry.OFS_PARAM2,
+						new TextString(getEntryData(struct, EffectEntry.IDX_PARAM2), 0, 4, "Resource (last four letters)"));
+					replaceEntry(struct, EffectEntry.IDX_SAVETYPE, EffectEntry.OFS_SAVETYPE,
+						new Flag(getEntryData(struct, EffectEntry.IDX_SAVETYPE), 0, 4, "Save type", new String[]{"No save", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
+						null, null, null, null, null, null, null, null,
+						null, null, null, null, "Invert condition;The spell will be applied if the check is failed."}));
+					replaceEntry(struct, EffectEntry.IDX_SPECIAL, EffectEntry.OFS_SPECIAL,
+                        new UnknownDecimal(getEntryData(struct, EffectEntry.IDX_SPECIAL), 0, 4, "Stat/DC"));
+				break;
+				case "MESTATES":
+					replaceEntry(struct, EffectEntry.IDX_PARAM1, EffectEntry.OFS_PARAM1,
+						new TextString(getEntryData(struct, EffectEntry.IDX_PARAM1), 0, 4, "Resource (first four letters)"));
+					replaceEntry(struct, EffectEntry.IDX_PARAM2, EffectEntry.OFS_PARAM2,
+						new TextString(getEntryData(struct, EffectEntry.IDX_PARAM2), 0, 4, "Resource (last four letters)"));
+					replaceEntry(struct, EffectEntry.IDX_SAVETYPE, EffectEntry.OFS_SAVETYPE,
+						new Flag(getEntryData(struct, EffectEntry.IDX_SAVETYPE), 0, 4, "Save type", new String[]{"No save", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
+						null, null, null, null, null, null, null, null,
+						null, null, null, null, "Invert condition;The spell will be applied if target doesn't have any of the states."}));
+					replaceEntry(struct, EffectEntry.IDX_SPECIAL, EffectEntry.OFS_SPECIAL,
+                        new IdsBitmap(getEntryData(struct, EffectEntry.IDX_SPECIAL), 0, 4, "State", "STATE.IDS"));
+				break;
+				case "MESTATEI":
+					replaceEntry(struct, EffectEntry.IDX_PARAM1, EffectEntry.OFS_PARAM1,
+						new TextString(getEntryData(struct, EffectEntry.IDX_PARAM1), 0, 4, "Resource (first four letters)"));
+					replaceEntry(struct, EffectEntry.IDX_PARAM2, EffectEntry.OFS_PARAM2,
+						new TextString(getEntryData(struct, EffectEntry.IDX_PARAM2), 0, 4, "Resource (last four letters)"));
+					replaceEntry(struct, EffectEntry.IDX_SAVETYPE, EffectEntry.OFS_SAVETYPE,
+						new Flag(getEntryData(struct, EffectEntry.IDX_SAVETYPE), 0, 4, "Save type", new String[]{"No save", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
+						null, null, null, null, null, null, null, null,
+						null, null, null, null, "Invert condition;The spell will be applied if target isn't fully invisible."}));
+				break;
+				case "MEKILLSP":
+					replaceEntry(struct, EffectEntry.IDX_PARAM1, EffectEntry.OFS_PARAM1,
+						new TextString(getEntryData(struct, EffectEntry.IDX_PARAM1), 0, 4, "Resource (first four letters)"));
+					replaceEntry(struct, EffectEntry.IDX_PARAM2, EffectEntry.OFS_PARAM2,
+						new TextString(getEntryData(struct, EffectEntry.IDX_PARAM2), 0, 4, "Resource (last four letters)"));
+					replaceEntry(struct, EffectEntry.IDX_SAVETYPE, EffectEntry.OFS_SAVETYPE,
+						new Flag(getEntryData(struct, EffectEntry.IDX_SAVETYPE), 0, 4, "Save type", new String[]{"No save", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
+						null, null, null, null, null, null, null, null,
+						null, null, null, null, "Invert condition;The spell will be applied if target isn't dead."}));
+				break;
+				case "MESPLSTS":
+					replaceEntry(struct, EffectEntry.IDX_PARAM1, EffectEntry.OFS_PARAM1,
+						new TextString(getEntryData(struct, EffectEntry.IDX_PARAM1), 0, 4, "Resource (first four letters)"));
+					replaceEntry(struct, EffectEntry.IDX_PARAM2, EffectEntry.OFS_PARAM2,
+						new TextString(getEntryData(struct, EffectEntry.IDX_PARAM2), 0, 4, "Resource (last four letters)"));
+					replaceEntry(struct, EffectEntry.IDX_SAVETYPE, EffectEntry.OFS_SAVETYPE,
+						new Flag(getEntryData(struct, EffectEntry.IDX_SAVETYPE), 0, 4, "Save type", new String[]{"No save", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
+						null, null, null, null, null, null, null, null,
+						null, null, null, null, "Invert condition;The spell will be applied if target doesn't have any of the spell states."}));
+					replaceEntry(struct, EffectEntry.IDX_SPECIAL, EffectEntry.OFS_SPECIAL,
+                        new UnknownDecimal(getEntryData(struct, EffectEntry.IDX_SPECIAL), 0, 4, "State 1/State 2/State 3/State 4"));
+				break;
+				case "MEMOVSPL":
+					replaceEntry(struct, EffectEntry.IDX_PARAM1, EffectEntry.OFS_PARAM1,
+						new TextString(getEntryData(struct, EffectEntry.IDX_PARAM1), 0, 4, "Resource (first four letters)"));
+					replaceEntry(struct, EffectEntry.IDX_PARAM2, EffectEntry.OFS_PARAM2,
+						new TextString(getEntryData(struct, EffectEntry.IDX_PARAM2), 0, 4, "Resource (last four letters)"));
+					replaceEntry(struct, EffectEntry.IDX_SAVETYPE, EffectEntry.OFS_SAVETYPE,
+						new Flag(getEntryData(struct, EffectEntry.IDX_SAVETYPE), 0, 4, "Save type", new String[]{"No save", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
+						null, null, null, null, null, null, null, null,
+						null, null, null, null, "Invert condition;The spell will be applied if target isn't moving."}));
+				break;
+				case "MERACESP":
+					replaceEntry(struct, EffectEntry.IDX_PARAM1, EffectEntry.OFS_PARAM1,
+						new TextString(getEntryData(struct, EffectEntry.IDX_PARAM1), 0, 4, "Resource (first four letters)"));
+					replaceEntry(struct, EffectEntry.IDX_PARAM2, EffectEntry.OFS_PARAM2,
+						new TextString(getEntryData(struct, EffectEntry.IDX_PARAM2), 0, 4, "Resource (last four letters)"));
+					replaceEntry(struct, EffectEntry.IDX_SAVETYPE, EffectEntry.OFS_SAVETYPE,
+						new Flag(getEntryData(struct, EffectEntry.IDX_SAVETYPE), 0, 4, "Save type", new String[]{"No save", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
+						null, null, null, null, null, null, null, null,
+						null, null, null, null, "Invert condition;The spell will be applied if target isn't of the chosen race."}));
+					replaceEntry(struct, EffectEntry.IDX_SPECIAL, EffectEntry.OFS_SPECIAL,
+                        new UnknownDecimal(getEntryData(struct, EffectEntry.IDX_SPECIAL), 0, 4, "Race/Subrace/Unused/Unused"));
+				break;
+				case "MEACTSPL":
+					replaceEntry(struct, EffectEntry.IDX_PARAM1, EffectEntry.OFS_PARAM1,
+						new TextString(getEntryData(struct, EffectEntry.IDX_PARAM1), 0, 4, "Resource (first four letters)"));
+					replaceEntry(struct, EffectEntry.IDX_PARAM2, EffectEntry.OFS_PARAM2,
+						new TextString(getEntryData(struct, EffectEntry.IDX_PARAM2), 0, 4, "Resource (last four letters)"));
+					replaceEntry(struct, EffectEntry.IDX_SAVETYPE, EffectEntry.OFS_SAVETYPE,
+						new Flag(getEntryData(struct, EffectEntry.IDX_SAVETYPE), 0, 4, "Save type", new String[]{"No save", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
+						null, null, null, null, null, null, null, null,
+						null, null, null, null, "Invert condition;The spell will be applied if target is not doing the action.", "Use range;The spell will only be applied if target is targeting a point within the range."}));
+					replaceEntry(struct, EffectEntry.IDX_SPECIAL, EffectEntry.OFS_SPECIAL,
+                        new UnknownDecimal(getEntryData(struct, EffectEntry.IDX_SPECIAL), 0, 4, "Action/Range"));
+				break;
+				case "MEBARRAG":
+				case "MEBARRAM":
+					replaceEntry(struct, EffectEntry.IDX_PARAM1, EffectEntry.OFS_PARAM1,
+						new TextString(getEntryData(struct, EffectEntry.IDX_PARAM1), 0, 4, "Resource (first four letters)"));
+					replaceEntry(struct, EffectEntry.IDX_PARAM2, EffectEntry.OFS_PARAM2,
+						new TextString(getEntryData(struct, EffectEntry.IDX_PARAM2), 0, 4, "Resource (last four letters)"));
+					replaceEntry(struct, EffectEntry.IDX_SAVETYPE, EffectEntry.OFS_SAVETYPE,
+						new Flag(getEntryData(struct, EffectEntry.IDX_SAVETYPE), 0, 4, "Save type", new String[]{"No save", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
+						null, null, null, null, null, null, null, null,
+						null, null, null, null, null, null, null, null, 
+						null, null, null, null, "New spell as parent"}));
+					replaceEntry(struct, EffectEntry.IDX_SPECIAL, EffectEntry.OFS_SPECIAL,
+                        new DecNumber(getEntryData(struct, EffectEntry.IDX_SPECIAL), 0, 4, "# of casts"));
+				break;
+				case "MEWOFORC":
+					replaceEntry(struct, EffectEntry.IDX_PARAM1, EffectEntry.OFS_PARAM1,
+						new TextString(getEntryData(struct, EffectEntry.IDX_PARAM1), 0, 4, "Resource (first four letters)"));
+					replaceEntry(struct, EffectEntry.IDX_PARAM2, EffectEntry.OFS_PARAM2,
+						new TextString(getEntryData(struct, EffectEntry.IDX_PARAM2), 0, 4, "Resource (last four letters)"));
+					replaceEntry(struct, EffectEntry.IDX_SPECIAL, EffectEntry.OFS_SPECIAL,
+                        new DecNumber(getEntryData(struct, EffectEntry.IDX_SPECIAL), 0, 4, "# creatures"));
+				break;
+				case "MESPLSAV":	
+					replaceEntry(struct, EffectEntry.IDX_PARAM1, EffectEntry.OFS_PARAM1,
+						new TextString(getEntryData(struct, EffectEntry.IDX_PARAM1), 0, 4, "Resource (first four letters)"));
+					replaceEntry(struct, EffectEntry.IDX_PARAM2, EffectEntry.OFS_PARAM2,
+						new TextString(getEntryData(struct, EffectEntry.IDX_PARAM2), 0, 4, "Resource (last four letters)"));
+					replaceEntry(struct, EffectEntry.IDX_SAVETYPE, EffectEntry.OFS_SAVETYPE,
+						new Flag(getEntryData(struct, EffectEntry.IDX_SAVETYPE), 0, 4, "Save type", new String[]{"No save", null, null, null, null, null, null, "Use spell focus enchantment;Only necessary for items. Spells already have spell focus applied.", "Use spell focus evocation;Only necessary for items. Spells already have spell focus applied.", 
+						"Use spell focus necromancy;Only necessary for items. Spells already have spell focus applied.", "Use spell focus transmutation;Only necessary for items. Spells already have spell focus applied.", "Fortitude;Use this instead of bit 2.", "Reflex;Use this instead of bit 3.", "Will;Use this instead of bit 4.", null, null, null,
+						null, null, null, null, null, null, null, null, 
+						null, null, null, "Invert base save bonus", "New spell as parent", "Cast by summoner;The spell will be applied with the creature's summoner as the source."}));
+					replaceEntry(struct, EffectEntry.IDX_SPECIAL, EffectEntry.OFS_SPECIAL,
+						new UnknownDecimal(getEntryData(struct, EffectEntry.IDX_SPECIAL), 0, 4, "Save bonus stat/Multiplier/Divisor/Unused"));
+				break;
+				case "MEQUIVPA":	
+					replaceEntry(struct, EffectEntry.IDX_PARAM1, EffectEntry.OFS_PARAM1,
+						new TextString(getEntryData(struct, EffectEntry.IDX_PARAM1), 0, 4, "Resource (first four letters)"));
+					replaceEntry(struct, EffectEntry.IDX_PARAM2, EffectEntry.OFS_PARAM2,
+						new TextString(getEntryData(struct, EffectEntry.IDX_PARAM2), 0, 4, "Resource (last four letters)"));
+					replaceEntry(struct, EffectEntry.IDX_SAVETYPE, EffectEntry.OFS_SAVETYPE,
+						new Flag(getEntryData(struct, EffectEntry.IDX_SAVETYPE), 0, 4, "Save type", new String[]{"No save", null, null, null, null, null, null, null, null, 
+						null, null, "Fortitude;Use this instead of bit 2.", "Reflex;Use this instead of bit 3.", "Will;Use this instead of bit 4."}));
+					replaceEntry(struct, EffectEntry.IDX_SPECIAL, EffectEntry.OFS_SPECIAL,
+						new UnknownDecimal(getEntryData(struct, EffectEntry.IDX_SPECIAL), 0, 4, "Save bonus stat/Save bonus level/Unused/Unused"));
+				break;
+				case "MESPLPRC":	
+					replaceEntry(struct, EffectEntry.IDX_PARAM1, EffectEntry.OFS_PARAM1,
+						new TextString(getEntryData(struct, EffectEntry.IDX_PARAM1), 0, 4, "Resource (first four letters)"));
+					replaceEntry(struct, EffectEntry.IDX_PARAM2, EffectEntry.OFS_PARAM2,
+						new TextString(getEntryData(struct, EffectEntry.IDX_PARAM2), 0, 4, "Resource (last four letters)"));
+					replaceEntry(struct, EffectEntry.IDX_SPECIAL, EffectEntry.OFS_SPECIAL,
+						new UnknownDecimal(getEntryData(struct, EffectEntry.IDX_SPECIAL), 0, 4, "Percent chance/Multiplier/Divisor/Bonus stat"));
+				break;
+				case "MESMITE":
+					replaceEntry(struct, EffectEntry.IDX_PARAM1, EffectEntry.OFS_PARAM1,
+						new UnknownDecimal(getEntryData(struct, EffectEntry.IDX_PARAM1), 0, 4, "Bonus/Dice size/Dice thrown/Unused"));
+					if (ResourceFactory.resourceExists("REALDMG.IDS")) {
+						replaceEntry(struct, EffectEntry.IDX_PARAM2, EffectEntry.OFS_PARAM2,
+							new IdsBitmap(getEntryData(struct, EffectEntry.IDX_PARAM2), 0, 4, "Mode/Damage type", "REALDMG.IDS"));
+					} else {
+						replaceEntry(struct, EffectEntry.IDX_PARAM2, EffectEntry.OFS_PARAM2,
+							new UnknownDecimal(getEntryData(struct, EffectEntry.IDX_PARAM2), 0, 4, "Mode/Damage type"));
+					}
+					replaceEntry(struct, EffectEntry.IDX_SPECIAL, EffectEntry.OFS_SPECIAL,
+						new Bitmap(getEntryData(struct, EffectEntry.IDX_SPECIAL), 0, 4, "Smiting alignment", new String[]{"Smite evil", "Smite good"}));
+				break;
+				case "MESMITEH":
+				case "METURNUN":
+				case "MEQUIPLE":
+					replaceEntry(struct, EffectEntry.IDX_SPECIAL, EffectEntry.OFS_SPECIAL,
+                        new DecNumber(getEntryData(struct, EffectEntry.IDX_SPECIAL), 0, 4, "Duration"));
+				break;
+				case "MECIRCLE":	
+					replaceEntry(struct, EffectEntry.IDX_PARAM1, EffectEntry.OFS_PARAM1,
+						new DecNumber(getEntryData(struct, EffectEntry.IDX_PARAM1), 0, 4, "Value"));
+					replaceEntry(struct, EffectEntry.IDX_PARAM2, EffectEntry.OFS_PARAM2,
+						new Bitmap(getEntryData(struct, EffectEntry.IDX_PARAM2), 0, 4, "Modifier type", s_inctype));
+					replaceEntry(struct, EffectEntry.IDX_SAVETYPE, EffectEntry.OFS_SAVETYPE,
+						new Flag(getEntryData(struct, EffectEntry.IDX_SAVETYPE), 0, 4, "Save type", new String[]{"No save", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
+						null, null, null, null, null, null, null, null,
+						"Modify personal space"}));
+				break;
+				case "MEMIRRIM":	
+					replaceEntry(struct, EffectEntry.IDX_PARAM1, EffectEntry.OFS_PARAM1,
+						new DecNumber(getEntryData(struct, EffectEntry.IDX_PARAM1), 0, 4, "Value"));
+					replaceEntry(struct, EffectEntry.IDX_PARAM2, EffectEntry.OFS_PARAM2,
+						new Bitmap(getEntryData(struct, EffectEntry.IDX_PARAM2), 0, 4, "Modifier type", s_inctype));
+					replaceEntry(struct, EffectEntry.IDX_SPECIAL, EffectEntry.OFS_SPECIAL,
+                        new DecNumber(getEntryData(struct, EffectEntry.IDX_SPECIAL), 0, 4, "Duration"));
+				break;
+				case "METELEFI":
+					replaceEntry(struct, EffectEntry.IDX_PARAM1, EffectEntry.OFS_PARAM1,
+						new DecNumber(getEntryData(struct, EffectEntry.IDX_PARAM1), 0, 4, "Maximum range"));
+				break;
+				case "METIMETR":
+					replaceEntry(struct, EffectEntry.IDX_PARAM1, EffectEntry.OFS_PARAM1,
+						new DecNumber(getEntryData(struct, EffectEntry.IDX_PARAM1), 0, 4, "Seconds back in time"));
+				break;
+				case "MEHGTST":
+					replaceEntry(struct, EffectEntry.IDX_PARAM1, EffectEntry.OFS_PARAM1,
+						new DecNumber(getEntryData(struct, EffectEntry.IDX_PARAM1), 0, 4, "Value"));
+					replaceEntry(struct, EffectEntry.IDX_PARAM2, EffectEntry.OFS_PARAM2,
+						new Bitmap(getEntryData(struct, EffectEntry.IDX_PARAM2), 0, 4, "Modifier type", s_inctype));
+					replaceEntry(struct, EffectEntry.IDX_SPECIAL, EffectEntry.OFS_SPECIAL,
+                        new Bitmap(getEntryData(struct, EffectEntry.IDX_SPECIAL), 0, 4, "Height property", new String[]{"Height", "Velocity", "Acceleration", "Minimum Height", "Maximum Height"}));
+				break;
+				case "MEWHIRLA":	
+					replaceEntry(struct, EffectEntry.IDX_PARAM1, EffectEntry.OFS_PARAM1,
+						new TextString(getEntryData(struct, EffectEntry.IDX_PARAM1), 0, 4, "Resource (first four letters)"));
+					replaceEntry(struct, EffectEntry.IDX_PARAM2, EffectEntry.OFS_PARAM2,
+						new TextString(getEntryData(struct, EffectEntry.IDX_PARAM2), 0, 4, "Resource (last four letters)"));
+					replaceEntry(struct, EffectEntry.IDX_SAVETYPE, EffectEntry.OFS_SAVETYPE,
+						new Flag(getEntryData(struct, EffectEntry.IDX_SAVETYPE), 0, 4, "Save type", new String[]{"No save", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
+						null, null, null, null, null, null, null, null,
+						"Mainhand attack;If bits 16 and 17 aren't set, the weapon is specified by the resource field.", "Offhand attack;If bits 16 and 17 aren't set, the weapon is specified by the resource field.", null, null, null, null, null, null, 
+						"Limit by range;Only creatures within weapon range will be attacked.", "Whirlwind attack;Combined with bit 24, the range is increased if you have Improved Whirlwind Attack.", null, null, null, null, "Ignore cleave effect;On-hit cleave effects of the weapon won't be triggered."}));
+					replaceEntry(struct, EffectEntry.IDX_SPECIAL, EffectEntry.OFS_SPECIAL,
+                        new DecNumber(getEntryData(struct, EffectEntry.IDX_SPECIAL), 0, 4, "Attack bonus"));
+				break;
+				case "MESPIN":
+					replaceEntry(struct, EffectEntry.IDX_PARAM1, EffectEntry.OFS_PARAM1,
+						new DecNumber(getEntryData(struct, EffectEntry.IDX_PARAM1), 0, 4, "Speed"));
+					replaceEntry(struct, EffectEntry.IDX_PARAM2, EffectEntry.OFS_PARAM2,
+						new Bitmap(getEntryData(struct, EffectEntry.IDX_PARAM2), 0, 4, "Direction", new String[]{"Counter-clockwise", "Clockwise"}));
+					replaceEntry(struct, EffectEntry.IDX_SAVETYPE, EffectEntry.OFS_SAVETYPE,
+						new Flag(getEntryData(struct, EffectEntry.IDX_SAVETYPE), 0, 4, "Save type", new String[]{"No save", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
+						null, null, null, null, null, null, null, null,
+						null, "Check sequence;The creature will only spin if they are currently doing the animation sequence."}));
+					replaceEntry(struct, EffectEntry.IDX_SPECIAL, EffectEntry.OFS_SPECIAL,
+                        new IdsBitmap(getEntryData(struct, EffectEntry.IDX_SPECIAL), 0, 4, "Sequence", "SEQUENCE.IDS"));
+				break;
+				case "MECRIT":
+					replaceEntry(struct, EffectEntry.IDX_PARAM1, EffectEntry.OFS_PARAM1,
+						new DecNumber(getEntryData(struct, EffectEntry.IDX_PARAM1), 0, 4, "Value"));
+					replaceEntry(struct, EffectEntry.IDX_SAVETYPE, EffectEntry.OFS_SAVETYPE,
+						new Flag(getEntryData(struct, EffectEntry.IDX_SAVETYPE), 0, 4, "Save type", new String[]{"No save", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
+						null, null, null, null, null, null, null, null,
+						"Melee only", "Ranged only", "Fist only", null, "This weapon only"}));
+					replaceEntry(struct, EffectEntry.IDX_SPECIAL, EffectEntry.OFS_SPECIAL,
+                        new Bitmap(getEntryData(struct, EffectEntry.IDX_SPECIAL), 0, 4, "Item type", ItmResource.s_categories));
+				break;
+				case "MEMODSTA":
+					replaceEntry(struct, EffectEntry.IDX_PARAM1, EffectEntry.OFS_PARAM1,
+						new DecNumber(getEntryData(struct, EffectEntry.IDX_PARAM1), 0, 4, "Value"));
+					replaceEntry(struct, EffectEntry.IDX_PARAM2, EffectEntry.OFS_PARAM2,
+						new Bitmap(getEntryData(struct, EffectEntry.IDX_PARAM2), 0, 4, "Modifier type", s_inctype));
+					replaceEntry(struct, EffectEntry.IDX_SPECIAL, EffectEntry.OFS_SPECIAL,
+						new IdsBitmap(getEntryData(struct, EffectEntry.IDX_SPECIAL), 0, 4, "Stat", "STATS.IDS"));
+				break;
+				case "MEMODSKL":
+					replaceEntry(struct, EffectEntry.IDX_PARAM1, EffectEntry.OFS_PARAM1,
+						new DecNumber(getEntryData(struct, EffectEntry.IDX_PARAM1), 0, 4, "Value"));
+					replaceEntry(struct, EffectEntry.IDX_PARAM2, EffectEntry.OFS_PARAM2,
+						new Bitmap(getEntryData(struct, EffectEntry.IDX_PARAM2), 0, 4, "Modifier type", s_inctype));
+					replaceEntry(struct, EffectEntry.IDX_SPECIAL, EffectEntry.OFS_SPECIAL,
+						new IdsBitmap(getEntryData(struct, EffectEntry.IDX_SPECIAL), 0, 4, "Stat", "SKILLS.IDS"));
+				break;
+				case "MEWINGBU":
+					replaceEntry(struct, EffectEntry.IDX_PARAM1, EffectEntry.OFS_PARAM1,
+						new DecNumber(getEntryData(struct, EffectEntry.IDX_PARAM1), 0, 4, "Speed"));
+					replaceEntry(struct, EffectEntry.IDX_PARAM2, EffectEntry.OFS_PARAM2,
+						new Bitmap(getEntryData(struct, EffectEntry.IDX_PARAM2), 0, 4, "Direction", new String[]{"", "Away from target point", "Away from source",
+			"Towards target point", "Towards source", "Away from source point", "Towards source point"}));
+					replaceEntry(struct, EffectEntry.IDX_SPECIAL, EffectEntry.OFS_SPECIAL,
+						new DecNumber(getEntryData(struct, EffectEntry.IDX_SPECIAL), 0, 4, "Acceleration"));
+				break;
+				case "MEHGTMOD":	
+					replaceEntry(struct, EffectEntry.IDX_PARAM1, EffectEntry.OFS_PARAM1,
+						new TextString(getEntryData(struct, EffectEntry.IDX_PARAM1), 0, 4, "Resource (first four letters)"));
+					replaceEntry(struct, EffectEntry.IDX_PARAM2, EffectEntry.OFS_PARAM2,
+						new TextString(getEntryData(struct, EffectEntry.IDX_PARAM2), 0, 4, "Resource (last four letters)"));
+					replaceEntry(struct, EffectEntry.IDX_SAVETYPE, EffectEntry.OFS_SAVETYPE,
+						new Flag(getEntryData(struct, EffectEntry.IDX_SAVETYPE), 0, 4, "Save type", new String[]{"No save", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
+						null, null, null, null, null, null, null, null,
+						"Treat min height as ground", "Don't end spell on land", null, "Cast spell on land"}));
+				break;
+			}
+			return true;
+        }
+      }
+    }
+    return false;
+  }
+  
+  // Effect type "IEex: Screen Effects" (502)
+  private static boolean updateOpcode502IWD2(AbstractStruct struct) throws Exception
+  {
+    if (struct != null) {
+      if (Profile.getEngine() == Profile.Engine.IWD2) {
+        int opcode = ((EffectType)getEntry(struct, EffectEntry.IDX_OPCODE)).getValue();
+        if (opcode == 502) {
+			replaceEntry(struct, EffectEntry.IDX_PARAM1, EffectEntry.OFS_PARAM1,
+				new DecNumber(getEntryData(struct, EffectEntry.IDX_PARAM1), 0, 4, EFFECT_PARAMETER_1));
+			replaceEntry(struct, EffectEntry.IDX_PARAM2, EffectEntry.OFS_PARAM2,
+				new DecNumber(getEntryData(struct, EffectEntry.IDX_PARAM2), 0, 4, EFFECT_PARAMETER_2));
+			replaceEntry(struct, EffectEntry.IDX_SAVETYPE, EffectEntry.OFS_SAVETYPE,
+				new Flag(getEntryData(struct, EffectEntry.IDX_SAVETYPE), 0, 4, "Save type", new String[]{"No save", null, null, "Fortitude", "Reflex", "Will"}));
+			replaceEntry(struct, EffectEntry.IDX_SPECIAL, EffectEntry.OFS_SPECIAL,
+				new DecNumber(getEntryData(struct, EffectEntry.IDX_SPECIAL), 0, 4, EFFECT_SPECIAL));
+			int param1 = ((IsNumeric)getEntry(struct, EffectEntry.IDX_PARAM1)).getValue();
+			int param2 = ((IsNumeric)getEntry(struct, EffectEntry.IDX_PARAM2)).getValue();
+			int special = ((IsNumeric)getEntry(struct, EffectEntry.IDX_SPECIAL)).getValue();
+			int savetypeValue = ((Flag)getEntry(struct, EffectEntry.IDX_SAVETYPE)).getValue();
+			String resourceValue = ((TextString)getEntry(struct, EffectEntry.IDX_RESOURCE)).getText();
+			switch(resourceValue) {
+				case "EXSPLDEF":
+					replaceEntry(struct, EffectEntry.IDX_PARAM1, EffectEntry.OFS_PARAM1,
+						new DecNumber(getEntryData(struct, EffectEntry.IDX_PARAM1), 0, 4, "Minimum spell level"));
+					replaceEntry(struct, EffectEntry.IDX_PARAM2, EffectEntry.OFS_PARAM2,
+						new DecNumber(getEntryData(struct, EffectEntry.IDX_PARAM2), 0, 4, "Maximum spell level"));
+					replaceEntry(struct, EffectEntry.IDX_SAVETYPE, EffectEntry.OFS_SAVETYPE,
+						new Flag(getEntryData(struct, EffectEntry.IDX_SAVETYPE), 0, 4, "Save type", new String[]{"No save", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
+						null, null, null, null, null, null, null, null,
+						null, "Cast spell on final deflect;When the last spell level is used up, a spell specified in resource 2 will be cast.", "Cast spell on each deflect;Whenever a spell is deflected, a spell specified in resource 3 will be cast.", "Deflect spells, levels;A number of individual spells specified by special will be deflected.", "Don't remove source effects on final deflect", "Only deflect hostile spells;Only spells with the \"Hostile\" flag, or that deal damage, will be deflected.", "Spell turning;Spells will be reflected rather than deflected.", "Spell trap;Each deflection restores one of your previously used spells.",
+						"Ignore allies' spells", "Ignore AOE spells"}));
+					replaceEntry(struct, EffectEntry.IDX_SPECIAL, EffectEntry.OFS_SPECIAL,
+						new DecNumber(getEntryData(struct, EffectEntry.IDX_SPECIAL), 0, 4, "# spell levels"));
+				break;
+				case "MEDAMPRC":
+					replaceEntry(struct, EffectEntry.IDX_PARAM1, EffectEntry.OFS_PARAM1,
+						new DecNumber(getEntryData(struct, EffectEntry.IDX_PARAM1), 0, 4, "Percentage reduction"));
+					replaceEntry(struct, EffectEntry.IDX_PARAM2, EffectEntry.OFS_PARAM2,
+						new Flag(getEntryData(struct, EffectEntry.IDX_PARAM2), 0, 4, "Types blocked", new String[]{"None", "Acid", "Cold", "Electricity", "Fire", "Piercing", "Poison", "Magic", "Missile", "Slashing", "Piercing missile", "Bludgeoning missile", "Nonlethal", "Soul eater", "Bludgeoning", "Disease"}));
+					replaceEntry(struct, EffectEntry.IDX_SAVETYPE, EffectEntry.OFS_SAVETYPE,
+						new Flag(getEntryData(struct, EffectEntry.IDX_SAVETYPE), 0, 4, "Save type", new String[]{"Use delay", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
+						null, null, null, null, null, null, null, null,
+						"Limited uses instead of delay", "Remove parent effects on end"}));
+					if ((savetypeValue & 0x10000) > 0) {
+						replaceEntry(struct, EffectEntry.IDX_SPECIAL, EffectEntry.OFS_SPECIAL,
+							new DecNumber(getEntryData(struct, EffectEntry.IDX_SPECIAL), 0, 4, "# uses"));
+					} else {
+						replaceEntry(struct, EffectEntry.IDX_SPECIAL, EffectEntry.OFS_SPECIAL,
+							new DecNumber(getEntryData(struct, EffectEntry.IDX_SPECIAL), 0, 4, "Delay"));
+					}
+				break;
+				case "MEDEFLEC":
+					replaceEntry(struct, EffectEntry.IDX_PARAM1, EffectEntry.OFS_PARAM1,
+						new StringRef(getEntryData(struct, EffectEntry.IDX_PARAM1), 0, "String"));
+					replaceEntry(struct, EffectEntry.IDX_PARAM2, EffectEntry.OFS_PARAM2,
+						new Flag(getEntryData(struct, EffectEntry.IDX_PARAM2), 0, 4, "Types blocked", new String[]{"None", "Acid", "Cold", "Electricity", "Fire", "Piercing", "Poison", "Magic", "Missile", "Slashing", "Piercing missile", "Bludgeoning missile", "Nonlethal", "Soul eater", "Bludgeoning", "Disease"}));
+					replaceEntry(struct, EffectEntry.IDX_SAVETYPE, EffectEntry.OFS_SAVETYPE,
+						new Flag(getEntryData(struct, EffectEntry.IDX_SAVETYPE), 0, 4, "Save type", new String[]{"Use delay", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
+						null, null, null, null, null, null, null, null,
+						"Limited uses instead of delay", "Remove parent effects on end", null, "Deflect on-hit effects", "Reflect attack", "Deflect arrows feat;Can only trigger if the character has a hand free.", "Defensive roll feat;Can only trigger if the damage would kill the character.", "Don't deflect if incapacitated"}));
+					if ((savetypeValue & 0x10000) > 0) {
+						replaceEntry(struct, EffectEntry.IDX_SPECIAL, EffectEntry.OFS_SPECIAL,
+							new DecNumber(getEntryData(struct, EffectEntry.IDX_SPECIAL), 0, 4, "# uses"));
+					} else {
+						replaceEntry(struct, EffectEntry.IDX_SPECIAL, EffectEntry.OFS_SPECIAL,
+							new DecNumber(getEntryData(struct, EffectEntry.IDX_SPECIAL), 0, 4, "Delay"));
+					}
+				break;
+			}
+			return true;
         }
       }
     }
@@ -1869,12 +2728,27 @@ public final class EffectFactory
             "Call lightning",
             // 450..459
             "Globe of invulnerability", "Lower resistance", "Bane", "Power attack", "Expertise",
-            "Arterial strike", "Hamstring", "Rapid shot"};
+            "Arterial strike", "Hamstring", "Rapid shot", "Unknown (458)", "Unknown (459)", 
+            // 460..469
+            "Unknown (460)", "Unknown (461)", "Unknown (462)", "Unknown (463)", "Unknown (464)",
+            "Unknown (465)", "Unknown (466)", "Unknown (467)", "Unknown (468)", "Unknown (469)",
+            // 470..479
+            "Unknown (470)", "Unknown (471)", "Unknown (472)", "Unknown (473)", "Unknown (474)",
+            "Unknown (475)", "Unknown (476)", "Unknown (477)", "Unknown (478)", "Unknown (479)",
+            // 480..489
+            "Unknown (480)", "Unknown (481)", "Unknown (482)", "Unknown (483)", "Unknown (484)",
+            "Unknown (485)", "Unknown (486)", "Unknown (487)", "Unknown (488)", "Unknown (489)",
+            // 490..499
+            "Unknown (490)", "Unknown (491)", "Unknown (492)", "Unknown (493)", "Unknown (494)",
+            "Unknown (495)", "Unknown (496)", "Unknown (497)", "Unknown (498)", "Unknown (499)",
+            // 500..502
+            "IEex: Invoke Lua", "IEex: Modify Data", "IEex: Screen Effects"};
         break;
 
       default:
         s_effname = new String[0];
     }
+	s_effname_s = s_effname;
   }
 
   public String[] getEffectNameArray()
@@ -1948,13 +2822,13 @@ public final class EffectFactory
       offset = makeEffectCommon1(buffer, offset, s, isV1);
 
       // setting Resource field
-      offset = makeEffectResource(parent, buffer, offset, s, effectType, restype, param1, param2);
+      offset = makeEffectResource(parent, buffer, offset, s, effectType, restype, param1, param2, isV1);
 
       // setting common fields #2 ("Dice" ... "Save bonus")
-      offset = makeEffectCommon2(buffer, offset, s, isV1);
+      offset = makeEffectCommon2(parent, buffer, offset, s, effectType, isV1);
 
       // setting Parameter 2.5 field
-      offset = makeEffectParam25(parent, buffer, offset, s, effectType, restype, param1, param2);
+      offset = makeEffectParam25(parent, buffer, offset, s, effectType, restype, param1, param2, isV1);
 
       return offset;
     } else
@@ -3008,6 +3882,8 @@ public final class EffectFactory
                                         "Inventory 15", "Inventory 16", "Inventory 17", "Inventory 18",
                                         "Inventory 19", "Inventory 20", "Magic weapon", "Weapon 1",
                                         "Weapon 2", "Weapon 3", "Weapon 4"}));
+		} else if (Profile.getEngine() == Profile.Engine.IWD2 && ResourceFactory.resourceExists("REALSLOT.IDS")) {
+	      s.add(new IdsBitmap(buffer, offset, 4, "Slot", "REALSLOT.IDS"));
         } else {
           s.add(new IdsBitmap(buffer, offset, 4, "Slot", "SLOTS.IDS"));
         }
@@ -5032,6 +5908,13 @@ public final class EffectFactory
                                       int effectType, boolean isV1)
   {
     String restype = null;
+	String theresourceValue = getBufferResource(buffer, offset + 16);
+	Datatype theparam1;
+	Datatype theparam2;
+	int theparam1Value = buffer.getInt(offset);
+	int theparam2Value = buffer.getInt(offset + 0x4);
+	int thesavetypeValue = buffer.getInt(offset + (isV1 ? 0x20 : 0x24));
+	int thespecialValue = buffer.getInt(offset + (isV1 ? 0x28 : 0x2C));
     switch (effectType) {
       case 61: // Alchemy
         s.add(new DecNumber(buffer, offset, 4, "Value"));
@@ -5269,8 +6152,84 @@ public final class EffectFactory
         break;
 
       case 288: // Set spell state
-        s.add(new DecNumber(buffer, offset, 4, AbstractStruct.COMMON_UNUSED));
-        s.add(new IdsBitmap(buffer, offset + 4, 4, "State", "SPLSTATE.IDS"));
+		theparam1 = new DecNumber(buffer, offset, 4, AbstractStruct.COMMON_UNUSED);
+		theparam2 = new IdsBitmap(buffer, offset + 4, 4, "State", "SPLSTATE.IDS");
+		theparam2.addUpdateListener((UpdateListener)parent);
+		switch(theparam2Value) {
+			case 190:
+				theparam1 = new DecNumber(buffer, offset, 4, "Value");
+			break;
+			case 191:
+				theparam1 = new DecNumber(buffer, offset, 4, "Value");
+			break;
+			case 192:
+				theparam1 = new DecNumber(buffer, offset, 4, "Value");
+			break;
+			case 193:
+				theparam1 = new DecNumber(buffer, offset, 4, "Value");
+			break;
+			case 194:
+				theparam1 = new DecNumber(buffer, offset, 4, "Value");
+			break;
+			case 195:
+				theparam1 = new DecNumber(buffer, offset, 4, "Value");
+			break;
+			case 196:
+				theparam1 = new DecNumber(buffer, offset, 4, "Value");
+			break;
+			case 207:
+				theparam1 = new DecNumber(buffer, offset, 4, "# creatures");
+			break;
+			case 213:
+				theparam1 = new IdsBitmap(buffer, offset, 4, "New damage type", "DAMAGES.IDS");
+			break;
+			case 214:
+				theparam1 = new IdsBitmap(buffer, offset, 4, "Damage type", "DAMAGES.IDS");
+			break;
+			case 231:
+				theparam1 = new Bitmap(buffer, offset, 4, "AC against attacks of opportunity", new String[]{"Immune", "+1", "+2", "+3", "+4", "+5", "+6", "+7", "+8", "+9", "+10"});
+			break;
+			case 234:
+				theparam1 = new DecNumber(buffer, offset, 4, "Max spell level that can be quickened");
+			break;
+			case 235:
+				theparam1 = new DecNumber(buffer, offset, 4, "Max spell level that can be made safe");
+			break;
+			case 236:
+			case 237:
+				theparam1 = new DecNumber(buffer, offset, 4, "DC modifier");
+			break;
+			case 238:
+				theparam1 = new DecNumber(buffer, offset, 4, "Max spell level that can be maximized");
+			break;
+			case 239:
+				theparam1 = new DecNumber(buffer, offset, 4, "Max spell level that can be extended");
+			break;
+			case 240:
+				theparam1 = new DecNumber(buffer, offset, 4, "Spell level reduction");
+			break;
+			case 241:
+				theparam1 = new Bitmap(buffer, offset, 4, "Category", ItmResource.s_categories);
+			break;
+			case 243:
+				theparam1 = new DecNumber(buffer, offset, 4, "DC modifier");
+			break;
+			case 246:
+				theparam1 = new DecNumber(buffer, offset, 4, "Value");
+			break;
+			case 250:
+				if (theresourceValue.equalsIgnoreCase("MESPLSEQ")) {
+					theparam1 = new UnknownDecimal(buffer, offset, 4, "# spells/Max spell level");
+				}
+			break;
+			case 251:
+				if (theresourceValue.equalsIgnoreCase("EXEMPSPL") || theresourceValue.equalsIgnoreCase("EXEXTSPL") || theresourceValue.equalsIgnoreCase("EXMASSPL") || theresourceValue.equalsIgnoreCase("EXMAXSPL") || theresourceValue.equalsIgnoreCase("EXPERSPL") || theresourceValue.equalsIgnoreCase("EXQUISPL") || theresourceValue.equalsIgnoreCase("EXSAFSPL") || theresourceValue.equalsIgnoreCase("EXWIDSPL")) {
+					theparam1 = new DecNumber(buffer, offset, 4, "Spell level adjust");
+				}
+			break;
+		}
+		s.add(theparam1);
+        s.add(theparam2);
         break;
 
       case 296: // Set global variable
@@ -5380,8 +6339,8 @@ public final class EffectFactory
         break;
 
       case 436: // Damage reduction
-        s.add(new DecNumber(buffer, offset, 4, "Value"));
-        s.add(new DecNumber(buffer, offset + 4, 4, "Enchantment to overcome"));
+        s.add(new DecNumber(buffer, offset, 4, AbstractStruct.COMMON_UNUSED));
+        s.add(new Bitmap(buffer, offset + 4, 4, "Damage reduction", new String[]{"None", "5/+1", "10/+2", "15/+3", "20/+4", "25/+5", "15/+3 (bugged)", "35/+7", "40/+8", "45/+9", "50/+10"}));
         break;
 
       case 437: // Disguise
@@ -5405,6 +6364,245 @@ public final class EffectFactory
         s.add(new Bitmap(buffer, offset + 4, 4, "Globe type",
                          new String[]{"Minor globe of invulnerability", "Globe of invulnerability"}));
         break;
+		
+      case 500: // IEex: Invoke Lua
+	  case 502: // IEex: Screen Effects
+		  theparam1 = new DecNumber(buffer, offset, 4, EFFECT_PARAMETER_1);
+		  theparam2 = new DecNumber(buffer, offset + 4, 4, EFFECT_PARAMETER_2);
+
+			switch(theresourceValue) {
+				case "EXDAMAGE":
+					theparam1 = new UnknownDecimal(buffer, offset, 4, "Bonus/Dice size/Dice thrown/Proficiency");
+					if (ResourceFactory.resourceExists("REALDMG.IDS")) {
+						theparam2 = new IdsBitmap(buffer, offset + 4, 4, "Mode/Damage type", "REALDMG.IDS");
+					} else {
+						theparam2 = new UnknownDecimal(buffer, offset + 4, 4, "Mode/Damage type");
+					}
+				break;
+				case "EXMODMEM":
+					theparam1 = new DecNumber(buffer, offset, 4, "Spells restored (removed if negative)");
+					theparam2 = new DecNumber(buffer, offset + 4, 4, "Highest spell level");
+				break;
+				case "MEAOESP2":	
+					theparam1 = new TextString(buffer, offset, 4, "Resource (first four letters)");
+					theparam2 = new TextString(buffer, offset + 4, 4, "Resource (last four letters)");
+				break;
+				case "MEHEALIN":
+					theparam1 = new UnknownDecimal(buffer, offset, 4, "Bonus/Unused/Dice size/Dice thrown");
+					theparam2 = new Bitmap(buffer, offset + 4, 4, "Modifier type", new String[]{"Increment", "Set", "Increment % of", "Lay on hands",
+                                        "Wholeness of body", "Lathander's renewal"});
+				break;
+				case "MESTATSP":
+					if (theparam2Value > 65535) {
+						theparam1 = new DecNumber(buffer, offset, 4, "Read offset");
+						theparam2 = new UnknownDecimal(buffer, offset + 4, 4, "Scaling index/Read size");
+					} else {
+						if (theparam1Value > 65535) {
+							theparam1 = new UnknownDecimal(buffer, offset, 4, "Check stat/Unused/Other stat/Subtracted stat");
+						} else {
+							theparam1 = new IdsBitmap(buffer, offset, 4, "Check stat", "STATS.IDS");
+						}
+						theparam2 = new DecNumber(buffer, offset + 4, 4, "Scaling index");
+					}
+				break;
+				case "MESTATSC":
+				case "MEHALFTH":
+					if (theparam1Value > 65535) {
+						theparam1 = new UnknownDecimal(buffer, offset, 4, "Check stat/Unused/Other stat/Subtracted stat");
+					} else {
+						theparam1 = new IdsBitmap(buffer, offset, 4, "Check stat", "STATS.IDS");
+					}
+					if (theparam2Value > 65535) {
+						theparam2 = new UnknownDecimal(buffer, offset + 4, 4, "Scaling index/Unused/Check race/Check subrace");
+					} else {
+						theparam2 = new DecNumber(buffer, offset + 4, 4, "Scaling index");
+					}
+				break;
+				case "MEEXHIT":	
+				case "MEONHIT":	
+					if (ResourceFactory.resourceExists("USONHITI.IDS")) {
+						theparam2 = new IdsBitmap(buffer, offset + 4, 4, "Specific weapon group", "USONHITI.IDS");
+					}
+				break;
+				case "MESPLPRT":
+					switch(thespecialValue) {
+						case 0:
+							theparam2 = new Bitmap(buffer, offset + 4, 4, "Effect", s_effname_s);
+						break;
+						case 1:
+							theparam1 = new TextString(buffer, offset, 4, "Resource (first four letters)");
+							theparam2 = new TextString(buffer, offset + 4, 4, "Resource (last four letters)");
+						break;
+						case 2:
+							theparam2 = new IdsBitmap(buffer, offset + 4, 4, "State", "STATE.IDS");
+						break;
+						case 3:
+							theparam2 = new IdsBitmap(buffer, offset + 4, 4, "State", "SPLSTATE.IDS");
+						break;
+						case 4:
+							theparam1 = new DecNumber(buffer, offset, 4, "Value");
+							theparam2 = new IdsBitmap(buffer, offset + 4, 4, "Stat", "STATS.IDS");
+						break;
+						case 5:
+							theparam1 = new DecNumber(buffer, offset, 4, "Value");
+							theparam2 = new UnknownDecimal(buffer, offset + 4, 4, "Offset/Unused/Read size/Operator");
+						break;
+						case 6:
+							theparam2 = new IdsBitmap(buffer, offset + 4, 4, "Race", "RACE.IDS");
+						break;
+						case 7:
+							theparam2 = new IdsBitmap(buffer, offset + 4, 4, "General", "GENERAL.IDS");
+						break;
+					}
+				break;
+				case "MESPLPR2":
+					theparam2 = new Bitmap(buffer, offset + 4, 4, "Creature type", s_cretype3);
+				break;
+				case "MECLSCAS":
+				case "MESUMCAS":
+				case "MEONCAST":
+				case "MEPALSPL":
+				case "MEPOLYMO":
+				case "MEERUPT":
+				case "MEERUPT2":
+				case "MEWOFOST":
+				case "MESPELL":
+					theparam1 = new TextString(buffer, offset, 4, "Resource (first four letters)");
+					theparam2 = new TextString(buffer, offset + 4, 4, "Resource (last four letters)");
+				break;
+				case "MEPSTACK":
+					theparam1 = new TextString(buffer, offset, 4, "Resource (first four letters)");
+					theparam2 = new TextString(buffer, offset + 4, 4, "Resource (last four letters)");
+				break;
+				case "MEREMOPC":
+					if ((thesavetypeValue & 0x10000) > 0) {
+						theparam1 = new TextString(buffer, offset, 4, "Resource (first four letters)");
+						theparam2 = new TextString(buffer, offset + 4, 4, "Resource (last four letters)");
+					} else {
+						theparam1 = new Bitmap(buffer, offset, 4, "Match effect", s_effname_s);
+						theparam2 = new DecNumber(buffer, offset + 4, 4, "Match parameter2");
+					}
+				break;
+				case "MESTATRO":
+					theparam1 = new TextString(buffer, offset, 4, "Resource (first four letters)");
+					theparam2 = new TextString(buffer, offset + 4, 4, "Resource (last four letters)");
+				break;
+				case "MESTATES":
+					theparam1 = new TextString(buffer, offset, 4, "Resource (first four letters)");
+					theparam2 = new TextString(buffer, offset + 4, 4, "Resource (last four letters)");
+				break;
+				case "MESTATEI":
+					theparam1 = new TextString(buffer, offset, 4, "Resource (first four letters)");
+					theparam2 = new TextString(buffer, offset + 4, 4, "Resource (last four letters)");
+				break;
+				case "MEKILLSP":
+					theparam1 = new TextString(buffer, offset, 4, "Resource (first four letters)");
+					theparam2 = new TextString(buffer, offset + 4, 4, "Resource (last four letters)");
+				break;
+				case "MESPLSTS":
+					theparam1 = new TextString(buffer, offset, 4, "Resource (first four letters)");
+					theparam2 = new TextString(buffer, offset + 4, 4, "Resource (last four letters)");
+				case "MEMOVSPL":
+					theparam1 = new TextString(buffer, offset, 4, "Resource (first four letters)");
+					theparam2 = new TextString(buffer, offset + 4, 4, "Resource (last four letters)");
+				case "MERACESP":
+					theparam1 = new TextString(buffer, offset, 4, "Resource (first four letters)");
+					theparam2 = new TextString(buffer, offset + 4, 4, "Resource (last four letters)");
+				case "MEACTSPL":
+					theparam1 = new TextString(buffer, offset, 4, "Resource (first four letters)");
+					theparam2 = new TextString(buffer, offset + 4, 4, "Resource (last four letters)");
+				case "MEBARRAG":
+				case "MEBARRAM":
+					theparam1 = new TextString(buffer, offset, 4, "Resource (first four letters)");
+					theparam2 = new TextString(buffer, offset + 4, 4, "Resource (last four letters)");
+				break;
+				case "MEWOFORC":
+					theparam1 = new TextString(buffer, offset, 4, "Resource (first four letters)");
+					theparam2 = new TextString(buffer, offset + 4, 4, "Resource (last four letters)");
+				break;
+				case "MESPLSAV":	
+					theparam1 = new TextString(buffer, offset, 4, "Resource (first four letters)");
+					theparam2 = new TextString(buffer, offset + 4, 4, "Resource (last four letters)");
+				break;
+				case "MEQUIVPA":	
+					theparam1 = new TextString(buffer, offset, 4, "Resource (first four letters)");
+					theparam2 = new TextString(buffer, offset + 4, 4, "Resource (last four letters)");
+				break;
+				case "MESPLPRC":	
+					theparam1 = new TextString(buffer, offset, 4, "Resource (first four letters)");
+					theparam2 = new TextString(buffer, offset + 4, 4, "Resource (last four letters)");
+				break;
+				case "MESMITE":
+					theparam1 = new UnknownDecimal(buffer, offset, 4, "Bonus/Dice size/Dice thrown/Unused");
+					if (ResourceFactory.resourceExists("REALDMG.IDS")) {
+						theparam2 = new IdsBitmap(buffer, offset + 4, 4, "Mode/Damage type", "REALDMG.IDS");
+					} else {
+						theparam2 = new UnknownDecimal(buffer, offset + 4, 4, "Mode/Damage type");
+					}
+				break;
+				case "MECIRCLE":	
+					theparam1 = new DecNumber(buffer, offset, 4, "Value");
+					theparam2 = new Bitmap(buffer, offset + 4, 4, "Modifier type", s_inctype);
+				break;
+				case "MEMIRRIM":	
+					theparam1 = new DecNumber(buffer, offset, 4, "Value");
+					theparam2 = new Bitmap(buffer, offset + 4, 4, "Modifier type", s_inctype);
+				break;
+				case "METELEFI":
+					theparam1 = new DecNumber(buffer, offset, 4, "Maximum range");
+				break;
+				case "METIMETR":
+					theparam1 = new DecNumber(buffer, offset, 4, "Seconds back in time");
+				break;
+				case "MEHGTST":
+					theparam1 = new DecNumber(buffer, offset, 4, "Value");
+					theparam2 = new Bitmap(buffer, offset + 4, 4, "Modifier type", s_inctype);
+				break;
+				case "MEWHIRLA":	
+					theparam1 = new TextString(buffer, offset, 4, "Resource (first four letters)");
+					theparam2 = new TextString(buffer, offset + 4, 4, "Resource (last four letters)");
+				break;
+				case "MESPIN":
+					theparam1 = new DecNumber(buffer, offset, 4, "Speed");
+					theparam2 = new Bitmap(buffer, offset + 4, 4, "Direction", new String[]{"Counter-clockwise", "Clockwise"});
+				break;
+				case "MECRIT":
+					theparam1 = new DecNumber(buffer, offset, 4, "Value");
+				break;
+				case "MEMODSTA":
+				case "MEMODSKL":
+					theparam1 = new DecNumber(buffer, offset, 4, "Value");
+					theparam2 = new Bitmap(buffer, offset + 4, 4, "Modifier type", s_inctype);
+				break;
+				case "MEWINGBU":
+					theparam1 = new DecNumber(buffer, offset, 4, "Speed");
+					theparam2 = new Bitmap(buffer, offset + 4, 4, "Direction", new String[]{"", "Away from target point", "Away from source",
+					"Towards target point", "Towards source", "Away from source point", "Towards source point"});
+				break;
+				case "MEHGTMOD":	
+					theparam1 = new TextString(buffer, offset, 4, "Resource (first four letters)");
+					theparam2 = new TextString(buffer, offset + 4, 4, "Resource (last four letters)");
+				break;
+				case "EXSPLDEF":
+					theparam1 = new DecNumber(buffer, offset, 4, "Minimum spell level");
+					theparam2 = new DecNumber(buffer, offset + 4, 4, "Maximum spell level");
+				break;
+				case "MEDAMPRC":
+					theparam1 = new DecNumber(buffer, offset, 4, "Percentage reduction");
+					theparam2 = new Flag(buffer, offset + 4, 4, "Types blocked", new String[]{"None", "Acid", "Cold", "Electricity", "Fire", "Piercing", "Poison", "Magic", "Missile", "Slashing", "Piercing missile", "Bludgeoning missile", "Nonlethal", "Soul eater", "Bludgeoning", "Disease"});
+				break;
+				case "MEDEFLEC":
+					theparam1 = new StringRef(buffer, offset, "String");
+					theparam2 = new Flag(buffer, offset + 4, 4, "Types blocked", new String[]{"None", "Acid", "Cold", "Electricity", "Fire", "Piercing", "Poison", "Magic", "Missile", "Slashing", "Piercing missile", "Bludgeoning missile", "Nonlethal", "Soul eater", "Bludgeoning", "Disease"});
+				break;
+			}
+			s.add(theparam1);
+			s.add(theparam2);
+        break;
+		
+	  case 501: // IEex: Modify Data
+	      makeEffectParamsDefault(buffer, offset, s);
+		break;
 
       default:
         makeEffectParamsDefault(buffer, offset, s);
@@ -5421,6 +6619,16 @@ public final class EffectFactory
       s.add(new DecNumber(buffer, offset + 4, 4, EFFECT_PARAMETER_2));
     }
   }
+
+	private static String getBufferResource(ByteBuffer buffer, int offset) 
+	{
+		byte[] bytes = new byte[8];
+		for (int i = 0; i < 8; i++) {
+			bytes[i] = buffer.get(offset + i);
+		}
+		String s = new String(bytes, StandardCharsets.UTF_8);
+		return s;
+	}
 
   private int makeEffectCommon1(ByteBuffer buffer, int offset, List<StructEntry> s, boolean isV1)
   {
@@ -5451,34 +6659,85 @@ public final class EffectFactory
   }
 
   private int makeEffectResource(Datatype parent, ByteBuffer buffer, int offset, List<StructEntry> s,
-                                 int effectType, String resourceType, int param1, int param2)
+                                 int effectType, String resourceType, int param1, int param2, boolean isV1)
   {
     boolean isEEex = Profile.getProperty(Profile.Key.IS_GAME_EEEX);
+	Datatype theresource;
+	
     if (resourceType == null) {
-      switch (effectType) {
-        case 402:
-        case 403:
-          if (isEEex) {
-            s.add(new TextString(buffer, offset, 8, "Lua function"));
-          }
-          break;
+		if (Profile.getEngine() == Profile.Engine.IWD2) {
+			if (effectType == 288) {
+				int theparam2Value = buffer.getInt(offset - (isV1 ? 0xC : 0x10));
+				theresource = new TextString(buffer, offset, 8,
+					"Resource");
+				switch(theparam2Value) {
+					case 207:
+						theresource = new ResourceRef(buffer, offset,
+							EFFECT_RESOURCE, "CRE");
+					break;
+					case 223:
+					case 224:
+					case 227:
+					case 228:
+						theresource = new ResourceRef(buffer, offset,
+							EFFECT_RESOURCE, "SPL");
+					break;
+					case 225:
+						theresource = new ResourceRef(buffer, offset,
+							EFFECT_RESOURCE, "SPL");
+					break;
+					case 236:
+					case 237:
+						theresource = new ResourceRef(buffer, offset,
+							EFFECT_RESOURCE, "SPL");
+					break;
+					case 240:
+						theresource = new TextString(buffer, offset, 8, "Metamagic Lua function");
+					break;
+					case 250:
+						theresource = new TextString(buffer, offset, 8, "Lua function");
+					break;
+					case 251:
+						theresource = new TextString(buffer, offset, 8, "Lua function");
+					break;
 
-        case 408:
-          if (isEEex) {
-            s.add(new TextString(buffer, offset, 8, "Lua table"));
-          }
-          break;
+				}
+				theresource.addUpdateListener((UpdateListener)parent);
+			} else if (effectType == 500 || effectType == 502) {
+				theresource = new TextString(buffer, offset, 8, "Lua function");
+				theresource.addUpdateListener((UpdateListener)parent);
+			} else {
+				theresource = new Unknown(buffer, offset, 8, AbstractStruct.COMMON_UNUSED);
+			}
+			s.add(theresource);
+		} else {
+		  switch (effectType) {
+			
 
-        default:
-          if ((Profile.getEngine() == Profile.Engine.BG2 || Profile.isEnhancedEdition()) &&
-              effectType == 319 && param2 == 11) {    // Restrict item (BGEE)
-            s.add(new TextString(buffer, offset, 8, "Script name"));
-          }
-          else {
-            s.add(new Unknown(buffer, offset, 8, AbstractStruct.COMMON_UNUSED));
-          }
-          break;
-      }
+			case 402:
+			case 403:
+			  if (isEEex) {
+				s.add(new TextString(buffer, offset, 8, "Lua function"));
+			  }
+			  break;
+
+			case 408:
+			  if (isEEex) {
+				s.add(new TextString(buffer, offset, 8, "Lua table"));
+			  }
+			  break;
+
+			default:
+			  if ((Profile.getEngine() == Profile.Engine.BG2 || Profile.isEnhancedEdition()) &&
+				  effectType == 319 && param2 == 11) {    // Restrict item (BGEE)
+				s.add(new TextString(buffer, offset, 8, "Script name"));
+			  }
+			  else {
+				s.add(new Unknown(buffer, offset, 8, AbstractStruct.COMMON_UNUSED));
+			  }
+			  break;
+		  }
+		}
     }
     else if (resourceType.equalsIgnoreCase(EFFECT_STRING)) {
       s.add(new TextString(buffer, offset, 8, EFFECT_STRING));
@@ -5504,15 +6763,267 @@ public final class EffectFactory
 
     return offset;
   }
-
-  private int makeEffectCommon2(ByteBuffer buffer, int offset, List<StructEntry> s, boolean isV1)
+  
+  private int makeEffectCommon2(Datatype parent, ByteBuffer buffer, int offset, List<StructEntry> s, int effectType, boolean isV1)
   {
     final String[] save_type = getSaveType();
+	String theresourceValue = getBufferResource(buffer, offset - 8);
+	int theparam2Value = buffer.getInt(offset - (isV1 ? 0x14 : 0x18));
+	Flag thesavetype = new Flag(buffer, offset + 8, 4, EFFECT_SAVE_TYPE, save_type);
+	
+	if (Profile.getEngine() == Profile.Engine.IWD2) {
+		switch(effectType) {
+			case 0:
+				thesavetype = new Flag(buffer, offset + 8, 4, "Save type", new String[]{"No save", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
+					null, null, null, null, null, null, null, null,
+					null, null, null, null, "Used internally;Delay until certain screening effects can be used again.", null, null, null,
+					null, "Used internally;Stores spell for Ailment Contingency.", "Used internally;Stores spells for Spell Sequencer.", "Used internally;Stores spell for Copy Spell."});
+			break;
+			case 12:
+				thesavetype = new Flag(buffer, offset + 8, 4, "Save type", new String[]{"No save", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
+					null, null, null, null, null, null, null, null,
+					"Critical hit", "From offhand weapon"});
+			break;
+			case 67:
+			case 410:
+			case 411:
+				thesavetype = new Flag(buffer, offset + 8, 4, "Save type", new String[]{"No save", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
+					null, null, null, null, null, null, null, null,
+					"Ignore summon limit"});
+			break;
+			case 111:
+				thesavetype = new Flag(buffer, offset + 8, 4, "Save type", new String[]{"No save", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
+					null, null, null, null, null, null, null, null,
+					"Shapeshift weapon;MEPOLYBL blocks opcode 111 effects that do not have this flag"});
+			break;
+			case 266:
+				thesavetype = new Flag(buffer, offset + 8, 4, "Save type", new String[]{"No save", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
+					null, null, null, null, null, null, null, null,
+					null, null, null, null, "Doesn't affect incorporeal movement"});
+			break;
+		}
+		if (effectType == 288) {
+			switch(theparam2Value) {
+				case 192:
+					thesavetype = new Flag(buffer, offset + 8, 4, "Save type", new String[]{"No save", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
+						null, null, null, null, null, null, null, null,
+						"This weapon only", null, "Rogue levels unnecessary;The effect will give the character sneak attack damage even if they aren't a rogue."});
+				break;
+				case 195:
+					thesavetype = new Flag(buffer, offset + 8, 4, "Save type", new String[]{"No save", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
+						null, null, null, null, null, null, null, null,
+						"This weapon only"});
+				break;
+				case 196:
+					thesavetype = new Flag(buffer, offset + 8, 4, "Save type", new String[]{"Extra offhand attack", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
+						null, null, null, null, null, null, null, null,
+						"Extra mainhand attack;The extra attack will be with the main hand when dual-wielding.", "Extra manyshot attack"});
+				break;
+				case 207:
+					thesavetype = new Flag(buffer, offset + 8, 4, "Save type", new String[]{"No save", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
+						null, null, null, null, null, null, null, null,
+						null, null, null, null, "Summoned fiend"});
+				break;
+				case 214:
+					thesavetype = new Flag(buffer, offset + 8, 4, "Save type", new String[]{"Immune to damage type", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
+						null, null, null, null, null, null, null, null,
+						"Heal from damage type"});
+				break;
+				case 225:
+					thesavetype = new Flag(buffer, offset + 8, 4, "Save type", new String[]{"No save", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
+						null, null, null, null, null, null, null, null,
+						null, null, null, null, "On being hit effect;Triggers on being hit rather than on hitting another creature.", "Effect targets attacker", "You are effect source", "On critical hit only", null, null, "Not triggered by whirlwind attack"});
+				break;
+				case 231:
+					thesavetype = new Flag(buffer, offset + 8, 4, "Save type", new String[]{"Count all attacks of opportunity", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
+						null, null, null, null, null, null, null, null,
+						"Fleeing attack opportunity", "Ranged attack opportunity", "Spell cast attack opportunity"});
+				break;
+				case 241:
+					thesavetype = new Flag(buffer, offset + 8, 4, "Save type", new String[]{"No save", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
+						null, null, null, null, null, null, null, null,
+						"Critical item", "Two-handed", "Droppable", "Displayable", "Cursed", "Not copyable", "Magical", "Left-handed",
+						"Silver", "Cold iron", "Off-handed", "Conversable"});
+				break;
+				case 246:
+					thesavetype = new Flag(buffer, offset + 8, 4, "Save type", new String[]{"No save", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
+						null, null, null, null, null, null, null, null,
+						"Match projectile index", "Match projectile type", "Match internal projectile type", "Limited uses", "Consume use on attack", null, null, null,
+						"Modify projectile width;Affects fireball radius and cone width", "Modify projectile speed", "Replace projectile", "Modify projectile length;Affects skull trap trigger radius and cone length"});
+				break;
+				case 251:
+					thesavetype = new Flag(buffer, offset + 8, 4, "Save type", new String[]{"Count all attacks of opportunity", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
+						null, null, null, null, null, "Don't call typeMutator", "Don't call projectileMutator", "Don't call effectMutator"});
+				break;
+				default:
+					thesavetype = new Flag(buffer, offset + 8, 4, "Save type", new String[]{"No save", null, null, "Fortitude", "Reflex", "Will"});
+			}
+		} else if (effectType == 500 || effectType == 502) {
+			switch(theresourceValue) {
+				case "EXDAMAGE":
+					thesavetype = new Flag(buffer, offset + 8, 4, "Save type", new String[]{"No save", null, null, null, null, null, null, null, null, 
+									  null, null, "Fortitude;Use this instead of bit 2.", "Reflex;Use this instead of bit 3.", "Will;Use this instead of bit 4.", null, null, null,
+									  "Use damage multipliers", "Melee attack", "Ranged attack", "Can sneak attack;If bits 17 and 18 aren't set, you need spellstate 232 in order to sneak attack.", null, "Drain hit points to maximum", "Drain hit points", "Can sneak attack;Works even if bits 17 and 18 aren't set.", "Sneak attack only;Deals no damage except on a sneak attack.", "Damage reduction;The damage is reduced by the target's damage reduction."});
+				break;
+				case "EXMODMEM":
+					thesavetype = new Flag(buffer, offset + 8, 4, "Save type", new String[]{"No save", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
+						null, null, null, null, null, null, null, null,
+						"Restore bard spells", "Restore cleric spells", "Restore druid spells", "Restore paladin spells", "Restore ranger spells", "Restore sorcerer spells", "Restore wizard spells", "Restore domain spells", 
+						null, "Restore specific spell;Specified by resource 2 (in an EFF file).", null, "Generate feedback"});
+				break;
+				case "MEAOESP2":	
+					thesavetype = new Flag(buffer, offset + 8, 4, "Save type", new String[]{"No save", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
+						null, null, null, null, null, null, null, "Ignore non-evil creatures",
+						"Hit all targets in area;If unset, the spell will only hit a single, random target in the area.", "Target random point", "Cast by target", null, null, "Ignore allies", "Ignore blue-circled", "Ignore enemies", 
+						"Ignore target", "Hit nearest target;Only the nearest valid target will be hit.", "Check LOS;Only creatures the source can see can be hit.", null, null, null, "Don't target creatures;Used with bit 17."});
+				break;
+				case "MESTATSP":
+					thesavetype = new Flag(buffer, offset + 8, 4, "Save type", new String[]{"No save", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
+						null, null, null, null, null, null, null, null,
+						"Check Improved Wild Shape"});
+				break;
+				case "MESTATSC":
+				case "MEHALFTH":
+					thesavetype = new Flag(buffer, offset + 8, 4, "Save type", new String[]{"No save", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
+						null, null, null, null, null, null, null, null,
+						null, null, null, null, null, "Check race"});
+				break;
+				case "MESAFESP":	
+					thesavetype = new Flag(buffer, offset + 8, 4, "Save type", new String[]{"No save", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
+						null, null, null, null, null, null, null, null,
+						"No feedback;Won't display an \"Unaffected by effects of \" message.", "Allow absorption;Used with spellstate 214."});
+				break;
+				case "MESPLPRT":
+					thesavetype = new Flag(buffer, offset + 8, 4, "Save type", new String[]{"No save", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
+						null, null, null, null, null, null, null, null,
+						"No feedback;Won't display an \"Unaffected by effects of \" message.", "Check source for condition", null, null, "Invert condition;The spell will be blocked if the condition is not met."});
+				break;
+				case "MESPLPR2":
+					thesavetype = new Flag(buffer, offset + 8, 4, "Save type", new String[]{"No save", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
+						null, null, null, null, null, null, null, null,
+						"No feedback;Won't display an \"Unaffected by effects of \" message."});
+				break;
+				case "MEPSTACK":
+					thesavetype = new Flag(buffer, offset + 8, 4, "Save type", new String[]{"No save", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
+						null, null, null, null, null, null, null, null,
+						"Remove sourceless effects", "Remove school"});
+				break;
+				case "MEREMOPC":
+					thesavetype = new Flag(buffer, offset + 8, 4, "Save type", new String[]{"No save", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
+						null, null, null, null, null, null, null, null,
+						"Remove resource"});
+				break;
+				case "MESTATRO":
+					thesavetype = new Flag(buffer, offset + 8, 4, "Save type", new String[]{"No save", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
+						null, null, null, null, null, null, null, null,
+						null, null, null, null, "Invert condition;The spell will be applied if the check is failed."});
+				break;
+				case "MESTATES":
+					thesavetype = new Flag(buffer, offset + 8, 4, "Save type", new String[]{"No save", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
+						null, null, null, null, null, null, null, null,
+						null, null, null, null, "Invert condition;The spell will be applied if target doesn't have any of the states."});
+				break;
+				case "MESTATEI":
+					thesavetype = new Flag(buffer, offset + 8, 4, "Save type", new String[]{"No save", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
+						null, null, null, null, null, null, null, null,
+						null, null, null, null, "Invert condition;The spell will be applied if target isn't fully invisible."});
+				break;
+				case "MEKILLSP":
+					thesavetype = new Flag(buffer, offset + 8, 4, "Save type", new String[]{"No save", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
+						null, null, null, null, null, null, null, null,
+						null, null, null, null, "Invert condition;The spell will be applied if target isn't dead."});
+				break;
+				case "MESPLSTS":
+					thesavetype = new Flag(buffer, offset + 8, 4, "Save type", new String[]{"No save", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
+						null, null, null, null, null, null, null, null,
+						null, null, null, null, "Invert condition;The spell will be applied if target doesn't have any of the spell states."});
+				break;
+				case "MEMOVSPL":
+					thesavetype = new Flag(buffer, offset + 8, 4, "Save type", new String[]{"No save", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
+						null, null, null, null, null, null, null, null,
+						null, null, null, null, "Invert condition;The spell will be applied if target isn't moving."});
+				break;
+				case "MERACESP":
+					thesavetype = new Flag(buffer, offset + 8, 4, "Save type", new String[]{"No save", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
+						null, null, null, null, null, null, null, null,
+						null, null, null, null, "Invert condition;The spell will be applied if target isn't of the chosen race."});
+				break;
+				case "MEACTSPL":
+					thesavetype = new Flag(buffer, offset + 8, 4, "Save type", new String[]{"No save", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
+						null, null, null, null, null, null, null, null,
+						null, null, null, null, "Invert condition;The spell will be applied if target is not doing the action.", "Use range;The spell will only be applied if target is targeting a point within the range."});
+				break;
+				case "MEBARRAG":
+				case "MEBARRAM":
+					thesavetype = new Flag(buffer, offset + 8, 4, "Save type", new String[]{"No save", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
+						null, null, null, null, null, null, null, null,
+						null, null, null, null, null, null, null, null, 
+						null, null, null, null, "New spell as parent"});
+				break;
+				case "MESPLSAV":	
+					thesavetype = new Flag(buffer, offset + 8, 4, "Save type", new String[]{"No save", null, null, null, null, null, null, "Use spell focus enchantment;Only necessary for items. Spells already have spell focus applied.", "Use spell focus evocation;Only necessary for items. Spells already have spell focus applied.", 
+						"Use spell focus necromancy;Only necessary for items. Spells already have spell focus applied.", "Use spell focus transmutation;Only necessary for items. Spells already have spell focus applied.", "Fortitude;Use this instead of bit 2.", "Reflex;Use this instead of bit 3.", "Will;Use this instead of bit 4.", null, null, null,
+						null, null, null, null, null, null, null, null, 
+						null, null, null, "Invert base save bonus", "New spell as parent", "Cast by summoner;The spell will be applied with the creature's summoner as the source."});
+				break;
+				case "MEQUIVPA":	
+					thesavetype = new Flag(buffer, offset + 8, 4, "Save type", new String[]{"No save", null, null, null, null, null, null, null, null, 
+						null, null, "Fortitude;Use this instead of bit 2.", "Reflex;Use this instead of bit 3.", "Will;Use this instead of bit 4."});
+				break;
+				case "MECIRCLE":	
+					thesavetype = new Flag(buffer, offset + 8, 4, "Save type", new String[]{"No save", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
+						null, null, null, null, null, null, null, null,
+						"Modify personal space"});
+				break;
+				case "MEWHIRLA":	
+					thesavetype = new Flag(buffer, offset + 8, 4, "Save type", new String[]{"No save", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
+						null, null, null, null, null, null, null, null,
+						"Mainhand attack;If bits 16 and 17 aren't set, the weapon is specified by the resource field.", "Offhand attack;If bits 16 and 17 aren't set, the weapon is specified by the resource field.", null, null, null, null, null, null, 
+						"Limit by range;Only creatures within weapon range will be attacked.", "Whirlwind attack;Combined with bit 24, the range is increased if you have Improved Whirlwind Attack.", null, null, null, null, "Ignore cleave effect;On-hit cleave effects of the weapon won't be triggered."});
+				break;
+				case "MESPIN":
+					thesavetype = new Flag(buffer, offset + 8, 4, "Save type", new String[]{"No save", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
+						null, null, null, null, null, null, null, null,
+						null, "Check sequence;The creature will only spin if they are currently doing the animation sequence."});
+				break;
+				case "MECRIT":
+					thesavetype = new Flag(buffer, offset + 8, 4, "Save type", new String[]{"No save", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
+						null, null, null, null, null, null, null, null,
+						"Melee only", "Ranged only", "Fist only", null, "This weapon only"});
+				break;
+				case "MEHGTMOD":	
+					thesavetype = new Flag(buffer, offset + 8, 4, "Save type", new String[]{"No save", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
+						null, null, null, null, null, null, null, null,
+						"Treat min height as ground", "Don't end spell on land", null, "Cast spell on land"});
+				break;
+				case "EXSPLDEF":
+					thesavetype = new Flag(buffer, offset + 8, 4, "Save type", new String[]{"No save", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
+						null, null, null, null, null, null, null, null,
+						null, "Cast spell on final deflect;When the last spell level is used up, a spell specified in resource 2 will be cast.", "Cast spell on each deflect;Whenever a spell is deflected, a spell specified in resource 3 will be cast.", "Deflect spells, levels;A number of individual spells specified by special will be deflected.", "Don't remove source effects on final deflect", "Only deflect hostile spells;Only spells with the \"Hostile\" flag, or that deal damage, will be deflected.", "Spell turning;Spells will be reflected rather than deflected.", "Spell trap;Each deflection restores one of your previously used spells.",
+						"Ignore allies' spells", "Ignore AOE spells"});
+				break;
+				case "MEDAMPRC":
+					thesavetype = new Flag(buffer, offset + 8, 4, "Save type", new String[]{"Use delay", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
+						null, null, null, null, null, null, null, null,
+						"Limited uses instead of delay", "Remove parent effects on end"});
+				break;
+				case "MEDEFLEC":
+					thesavetype = new Flag(buffer, offset + 8, 4, "Save type", new String[]{"Use delay", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
+						null, null, null, null, null, null, null, null,
+						"Limited uses instead of delay", "Remove parent effects on end", null, "Deflect on-hit effects", "Reflect attack", "Deflect arrows feat;Can only trigger if the character has a hand free.", "Defensive roll feat;Can only trigger if the damage would kill the character.", "Don't deflect if incapacitated"});
+				break;
+				default:
+					thesavetype = new Flag(buffer, offset + 8, 4, EFFECT_SAVE_TYPE, save_type);
+			}
+		}
+	}
+
     if (isV1) {
       s.add(new DecNumber(buffer, offset, 4, EFFECT_DICE_COUNT_MAX_LEVEL));
       s.add(new DecNumber(buffer, offset + 4, 4, EFFECT_DICE_SIZE_MIN_LEVEL));
       if (Profile.getEngine() == Profile.Engine.IWD2) {
-        s.add(new Flag(buffer, offset + 8, 4, EFFECT_SAVE_TYPE, save_type));
+		thesavetype.addUpdateListener((UpdateListener)parent);
+        s.add(thesavetype);
         s.add(new DecNumber(buffer, offset + 12, 4, EFFECT_SAVE_PENALTY));
       }
       else {
@@ -5521,10 +7032,11 @@ public final class EffectFactory
       }
     } else {
       if (Profile.getEngine() == Profile.Engine.IWD2) {
-        s.add(new Flag(buffer, offset, 4, EFFECT_SAVE_TYPE, save_type));
-        s.add(new DecNumber(buffer, offset + 4, 4, EFFECT_SAVE_PENALTY));
-        s.add(new DecNumber(buffer, offset + 8, 4, EFFECT_PARAMETER));
-        s.add(new DecNumber(buffer, offset + 12, 4, EFFECT_PARAMETER));
+        s.add(new DecNumber(buffer, offset, 4, EFFECT_DICE_COUNT));
+        s.add(new DecNumber(buffer, offset + 4, 4, EFFECT_DICE_SIZE));
+		thesavetype.addUpdateListener((UpdateListener)parent);
+        s.add(thesavetype);
+        s.add(new DecNumber(buffer, offset + 12, 4, EFFECT_SAVE_PENALTY));
       }
       else {
         s.add(new DecNumber(buffer, offset, 4, EFFECT_DICE_COUNT));
@@ -5539,7 +7051,7 @@ public final class EffectFactory
   }
 
   private int makeEffectParam25(Datatype parent, ByteBuffer buffer, int offset, List<StructEntry> s,
-                                int effectType, String resourceType, int param1, int param2)
+                                int effectType, String resourceType, int param1, int param2, boolean isV1)
   {
     if (Profile.isEnhancedEdition()) {
       boolean isEEex = Profile.getProperty(Profile.Key.IS_GAME_EEEX);
@@ -5739,8 +7251,165 @@ public final class EffectFactory
           s.add(new DecNumber(buffer, offset, 4, EFFECT_SPECIAL));
           break;
       }
-    } else if (Profile.getEngine() == Profile.Engine.BG2 ||
-               Profile.getEngine() == Profile.Engine.IWD2) {
+    } else if (Profile.getEngine() == Profile.Engine.IWD2) {
+		String theresourceValue = getBufferResource(buffer, offset - 24);
+		int theparam2Value = buffer.getInt(offset - (isV1 ? 0x24 : 0x28));
+		int thesavetypeValue = buffer.getInt(offset - 8);
+		Datatype thespecial = new DecNumber(buffer, offset, 4, EFFECT_SPECIAL);
+		if (effectType == 288) {
+			switch(theparam2Value) {
+				case 190:
+					thespecial = new Bitmap(buffer, offset, 4, "Height property", new String[]{"", "Velocity", "Acceleration", "Minimum Height", "Maximum Height", "Center Height", "Minimum Speed"});
+				break;
+				case 191:
+					thespecial = new Bitmap(buffer, offset, 4, "Modifier type", new String[]{"Increment", "", "Set % of"});
+				break;
+				case 193:
+					thespecial = new Bitmap(buffer, offset, 4, "Modifier type", new String[]{"Wizard spell duration modifier", "Priest spell duration modifier", "Casting time modifier"});
+				break;
+				case 195:
+					thespecial = new Bitmap(buffer, offset, 4, "Item type (-1 for all types)", ItmResource.s_categories);
+				break;
+				case 196:
+					thespecial = new Bitmap(buffer, offset, 4, "Header type", s_headertype);
+				break;
+				case 207:
+					thespecial = new DecNumber(buffer, offset, 4, "Unused");
+				break;
+				case 225:
+					thespecial = new UnknownDecimal(buffer, offset, 4, "Header type/# uses");
+				break;
+				case 241:
+					thespecial = new Bitmap(buffer, offset, 4, "Special category", new String[]{"", "Armor", "Robe", "Shield", "Ranged", "Melee", "Fist", "Launcher"});
+				break;
+				case 243:
+					thespecial = new PriTypeBitmap(buffer, offset, 4, "School of magic");
+				break;
+				case 246:
+					thespecial = new UnknownDecimal(buffer, offset, 4, "Condition/# uses");
+				break;
+				case 250:
+					if (theresourceValue.equalsIgnoreCase("MESPLSEQ")) {
+						thespecial = new DecNumber(buffer, offset, 4, "Duration");
+					}
+				break;
+				case 251:
+					if (theresourceValue.equalsIgnoreCase("EXEMPSPL") || theresourceValue.equalsIgnoreCase("EXEXTSPL") || theresourceValue.equalsIgnoreCase("EXMASSPL") || theresourceValue.equalsIgnoreCase("EXMAXSPL") || theresourceValue.equalsIgnoreCase("EXPERSPL") || theresourceValue.equalsIgnoreCase("EXQUISPL") || theresourceValue.equalsIgnoreCase("EXSAFSPL") || theresourceValue.equalsIgnoreCase("EXWIDSPL")) {
+						thespecial = new DecNumber(buffer, offset, 4, "# uses");
+					}
+				break;
+			}
+		} else if (effectType == 500 || effectType == 502) {
+			switch(theresourceValue) {
+				case "EXDAMAGE":
+					thespecial = new UnknownDecimal(buffer, offset, 4, "Bonus stat/Multiplier/Divisor/Save bonus stat");
+				break;
+				case "EXMODMEM":
+					thespecial = new DecNumber(buffer, offset, 4, "Lowest spell level");
+				break;
+				case "MEAOESP2":	
+					thespecial = new DecNumber(buffer, offset, 4, "Radius");
+				break;
+				case "MESTATSP":
+					thespecial = new DecNumber(buffer, offset, 4, "Stat value modifier");
+				break;
+				case "MESTATSC":
+				case "MEHALFTH":
+					thespecial = new IdsBitmap(buffer, offset, 4, "Modified stat", "STATS.IDS");
+				break;
+				case "MEEXHIT":	
+				case "MEONHIT":	
+					thespecial = new Bitmap(buffer, offset, 4, "Header type", s_headertype);
+				break;
+				case "MESPLPRT":
+					thespecial = new Bitmap(buffer, offset, 4, "Condition", new String[]{"Has protection from effect", "Has protection from spell", "Has state", "Has spell state",
+						"Check stat", "Check offset", "Has race", "Has general"});
+					thespecial.addUpdateListener((UpdateListener)parent);
+				break;
+				case "MEPSTACK":
+					thespecial = new PriTypeBitmap(buffer, offset, 4, "School of magic");
+				break;
+				case "MEREMOPC":
+					thespecial = new DecNumber(buffer, offset, 4, "Match thespecial");
+				break;
+				case "MESTATRO":
+					thespecial = new UnknownDecimal(buffer, offset, 4, "Stat/DC");
+				break;
+				case "MESTATES":
+					thespecial = new IdsBitmap(buffer, offset, 4, "State", "STATE.IDS");
+				break;
+				case "MESPLSTS":
+					thespecial = new UnknownDecimal(buffer, offset, 4, "State 1/State 2/State 3/State 4");
+				break;
+				case "MERACESP":
+					thespecial = new UnknownDecimal(buffer, offset, 4, "Race/Subrace/Unused/Unused");
+				break;
+				case "MEACTSPL":
+					thespecial = new UnknownDecimal(buffer, offset, 4, "Action/Range");
+				break;
+				case "MEBARRAG":
+				case "MEBARRAM":
+					thespecial = new DecNumber(buffer, offset, 4, "# of casts");
+				break;
+				case "MEWOFORC":
+					thespecial = new DecNumber(buffer, offset, 4, "# creatures");
+				break;
+				case "MESPLSAV":	
+					thespecial = new UnknownDecimal(buffer, offset, 4, "Save bonus stat/Multiplier/Divisor/Unused");
+				break;
+				case "MEQUIVPA":	
+					thespecial = new UnknownDecimal(buffer, offset, 4, "Save bonus stat/Save bonus level/Unused/Unused");
+				break;
+				case "MESPLPRC":	
+					thespecial = new UnknownDecimal(buffer, offset, 4, "Percent chance/Multiplier/Divisor/Bonus stat");
+				break;
+				case "MESMITE":
+					thespecial = new Bitmap(buffer, offset, 4, "Smiting alignment", new String[]{"Smite evil", "Smite good"});
+				break;
+				case "MESMITEH":
+				case "METURNUN":
+				case "MEQUIPLE":
+					thespecial = new DecNumber(buffer, offset, 4, "Duration");
+				break;
+				case "MEMIRRIM":	
+					thespecial = new DecNumber(buffer, offset, 4, "Duration");
+				break;
+				case "MEHGTST":
+					thespecial = new Bitmap(buffer, offset, 4, "Height property", new String[]{"Height", "Velocity", "Acceleration", "Minimum Height", "Maximum Height"});
+				break;
+				case "MEWHIRLA":	
+					thespecial = new DecNumber(buffer, offset, 4, "Attack bonus");
+				break;
+				case "MESPIN":
+					thespecial = new IdsBitmap(buffer, offset, 4, "Sequence", "SEQUENCE.IDS");
+				break;
+				case "MECRIT":
+					thespecial = new Bitmap(buffer, offset, 4, "Item type", ItmResource.s_categories);
+				break;
+				case "MEMODSTA":
+					thespecial = new IdsBitmap(buffer, offset, 4, "Stat", "STATS.IDS");
+				break;
+				case "MEMODSKL":
+					thespecial = new IdsBitmap(buffer, offset, 4, "Stat", "STATS.IDS");
+				break;
+				case "MEWINGBU":
+					thespecial = new DecNumber(buffer, offset, 4, "Acceleration");
+				break;
+				case "EXSPLDEF":
+					thespecial = new DecNumber(buffer, offset, 4, "# spell levels");
+				break;
+				case "MEDAMPRC":
+				case "MEDEFLEC":
+					if ((thesavetypeValue & 0x10000) > 0) {
+						thespecial = new DecNumber(buffer, offset, 4, "# uses");
+					} else {
+						thespecial = new DecNumber(buffer, offset, 4, "Delay");
+					}
+				break;
+			}
+		}
+		s.add(thespecial);
+	} else if (Profile.getEngine() == Profile.Engine.BG2) {
       if (((Boolean)Profile.getProperty(Profile.Key.IS_GAME_TOBEX))) {
         // related to effect stacking behavior
         s.add(new DecNumber(buffer, offset, 2, EFFECT_IDENTIFIER));
