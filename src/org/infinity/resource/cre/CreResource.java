@@ -245,10 +245,10 @@ public final class CreResource extends AbstractStruct
   public static final String CRE_SF_NECROMANCY                = "SF: Necromancy";
   public static final String CRE_SF_TRANSMUTATION             = "SF: Transmutation";
   public static final String CRE_SPELL_PENETRATION            = "Spell penetration";
-  public static final String CRE_EXTRA_RAGE                   = "Extra rage";
-  public static final String CRE_EXTRA_WILD_SHAPE             = "Extra wild shape";
-  public static final String CRE_EXTRA_SMITING                = "Extra smiting";
-  public static final String CRE_EXTRA_TURNING                = "Extra turning";
+  public static final String CRE_EXTRA_RAGE                   = "Improved rage";
+  public static final String CRE_EXTRA_WILD_SHAPE             = "Improved wild shape";
+  public static final String CRE_EXTRA_SMITING                = "Improved smiting";
+  public static final String CRE_EXTRA_TURNING                = "Improved turning";
   public static final String CRE_EW_BASTARD_SWORD             = "EW: Bastard sword";
   public static final String CRE_AUGMENT_SUMMONING            = "Augment summoning";
   public static final String CRE_CONCOCT_POTIONS              = "Concoct potions";
@@ -279,6 +279,7 @@ public final class CreResource extends AbstractStruct
   public static final String CRE_WIDEN_SPELL                  = "Widen spell";
   public static final String CRE_MASS_SPELL                   = "Mass spell";
   public static final String CRE_MANYSHOT                     = "Manyshot";
+  public static final String CRE_DEFENSIVE_ROLL               = "Defensive roll";
   public static final String CRE_COMBAT_REFLEXES              = "Combat reflexes";
   public static final String CRE_NIGHTMARE_MODE               = "Nightmare mode";
   public static final String CRE_TRANSLUCENCY                 = "Translucency";
@@ -473,19 +474,27 @@ public final class CreResource extends AbstractStruct
     "Holding item", "Reset bit 16", null, null, "EE: No exploding death", null, "EE: Ignore nightmare mode",
     "EE: No tooltip", "Allegiance tracking", "General tracking", "Race tracking", "Class tracking",
     "Specifics tracking", "Gender tracking", "Alignment tracking", "Uninterruptible"};
-  public static final String[] s_iwd2ee_cre_flag = {
+  public static final String[] s_iwd2_cre_flag = {
+    "No flags set", "Identified", "No corpse", "Permanent corpse",
+    "Original class: Fighter", "Original class: Mage", "Original class: Cleric", "Original class: Thief",
+    "Original class: Druid", "Original class: Ranger", "Fallen paladin", "Fallen ranger",
+    "Export allowed", null, "Quest critical", null, "Enabled",
+    "Has seen party", "Invulnerable", "Non-threatening enemy", "No talk", "Ignore return to start", "Ignore inhibit AI", null,
+    null, "Allegiance tracking", "General tracking", "Race tracking", "Class tracking",
+    "Specifics tracking", "Gender tracking", "Alignment tracking", "Uninterruptible"};
+  public static final String[] s_iwd2ee_extra_cre_flag = {
     "No flags set", null, null, null, null, null, null, null, null, 
-	null, null, null, null, "Armored arcana multiplied;Used internally to increase the effect of Armored Arcana.", null, null, null,
+	null, null, null, null, "Armored arcana multiplied;Used internally to increase the effect of Armored Arcana.", "Really hidden", null, null,
     "Rewind time recording;The game is recording the character's effects, HP and position for Rewind Time.", "Metamagic updated;Used internally.", null, null, null, null, null, "Wall of force creature;Used internally for Wall of Force."};
   public static final String[] s_feats1 = {
     "No feats selected", "Aegis of rime", "Ambidexterity", "Aqua mortis", "Armor proficiency", "Armored arcana",
     "Arterial strike", "Blind fight", "Bullheaded", "Cleave", "Combat casting", "Courteous magocracy", "Crippling strike",
     "Dash", "Deflect arrows", "Dirty fighting", "Discipline", "Dodge", "Envenom weapon", "Exotic bastard",
-    "Expertise", "Extra rage", "Extra shapeshifting", "Extra smiting", "Extra turning", "Fiendslayer",
-    "Forester", "Great fortitude", "Hamstring", "Heretic's bane", "Heroic inspiration", "Improved critical",
+    "Expertise", "Improved rage", "Improved wild shape", "Improved smiting", "Improved turning", "Fiendslayer",
+    "Grapple", "Great fortitude", "Hamstring", "Heretic's bane", "Heroic inspiration", "Improved critical",
     "Improved evasion"};
   public static final String[] s_feats2 = {
-    "No feats selected", "Improved initiative", "Improved turning", "Iron will", "Lightning reflexes",
+    "No feats selected", "Improved initiative", "Planar turning", "Iron will", "Lightning reflexes",
     "Lingering song", "Luck of heroes", "Martial axe", "Martial bow", "Martial flail", "Martial greatsword",
     "Martial hammer", "Martial large sword", "Martial polearm", "Maximized attacks", "Mercantile background",
     "Power attack", "Precise shot", "Rapid shot", "Resist poison", "Scion of storms", "Shield proficiency",
@@ -503,7 +512,7 @@ public final class CreResource extends AbstractStruct
 	"Two-weapon defense"};
   public static final String[] s_feats4 = {
     "No feats selected", "Whirlwind attack", "Natural spell", "Counterspell", "Empower spell",
-    "Persistent spell", "Widen spell", "Mass spell", "Manyshot", "Combat reflexes"};
+    "Persistent spell", "Widen spell", "Mass spell", "Manyshot", "Defensive roll", "Combat reflexes"};
   public static final String[] s_subraces = {
       "Pureblood",
       "Aamimar/Drow/Gold dwarf/Strongheart halfling/Deep gnome",
@@ -1053,7 +1062,7 @@ public final class CreResource extends AbstractStruct
   {
     addField(new StringRef(buffer, offset, CRE_NAME));
     addField(new StringRef(buffer, offset + 4, CRE_TOOLTIP));
-    addField(new Flag(buffer, offset + 8, 4, CRE_FLAGS, s_flag)); // ToDo: figure these out whenever
+    addField(new Flag(buffer, offset + 8, 4, CRE_FLAGS, s_iwd2_cre_flag)); // ToDo: figure these out whenever
     addField(new DecNumber(buffer, offset + 12, 4, CRE_XP_VALUE));
     addField(new DecNumber(buffer, offset + 16, 4, CRE_XP));
     addField(new DecNumber(buffer, offset + 20, 4, CRE_GOLD));
@@ -1143,7 +1152,7 @@ public final class CreResource extends AbstractStruct
 	addField(new Unknown(buffer, offset + 397, 1));
 	addField(new DecNumber(buffer, offset + 398, 2, CRE_SUMMON_NUMBER));
 	addField(new Unknown(buffer, offset + 400, 12));
-	addField(new Flag(buffer, offset + 412, 4, CRE_EXTRA_FLAGS, s_iwd2ee_cre_flag));
+	addField(new Flag(buffer, offset + 412, 4, CRE_EXTRA_FLAGS, s_iwd2ee_extra_cre_flag));
 	addField(new Unknown(buffer, offset + 416, 4));
     addField(new ResourceRef(buffer, offset + 420, CRE_SCRIPT_TEAM, "BCS"));
     addField(new ResourceRef(buffer, offset + 428, CRE_SCRIPT_SPECIAL_1, "BCS"));
@@ -1210,8 +1219,9 @@ public final class CreResource extends AbstractStruct
 	addField(new DecNumber(buffer, offset + 517, 1, CRE_WIDEN_SPELL));
 	addField(new DecNumber(buffer, offset + 518, 1, CRE_MASS_SPELL));
 	addField(new DecNumber(buffer, offset + 519, 1, CRE_MANYSHOT));
-	addField(new DecNumber(buffer, offset + 520, 1, CRE_COMBAT_REFLEXES));
-    addField(new Unknown(buffer, offset + 521, 7));
+	addField(new DecNumber(buffer, offset + 520, 1, CRE_DEFENSIVE_ROLL));
+	addField(new DecNumber(buffer, offset + 521, 1, CRE_COMBAT_REFLEXES));
+    addField(new Unknown(buffer, offset + 522, 6));
     addField(new DecNumber(buffer, offset + 528, 1, CRE_ALCHEMY));
     addField(new DecNumber(buffer, offset + 529, 1, CRE_ANIMAL_EMPATHY));
     addField(new DecNumber(buffer, offset + 530, 1, CRE_BLUFF));

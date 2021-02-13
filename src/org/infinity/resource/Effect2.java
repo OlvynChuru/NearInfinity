@@ -48,8 +48,11 @@ public final class Effect2 extends AbstractStruct implements AddRemovable
   public static final String EFFECT_SOURCE_ITEM_SLOT  = "Source item slot";
   public static final String EFFECT_VARIABLE_NAME     = "Variable name";
   public static final String EFFECT_CASTER_LEVEL      = "Caster level";
+  public static final String EFFECT_CASTER_CLASS      = "Caster class";
+  public static final String EFFECT_CASTER_DOMAIN     = "Caster domain";
   public static final String EFFECT_INTERNAL_FLAGS    = "Internal flags";
   public static final String EFFECT_SECONDARY_TYPE    = "Secondary type";
+  public static final String EFFECT_SPELL_RESISTANCE_PENETRATION    = "Spell resistance penetration";
 
   public static final String[] s_itmflag = {"No flags set", "Add strength bonus", "Breakable",
                                             null, null, null, null, null, null, null, null, "Hostile",
@@ -73,7 +76,9 @@ public final class Effect2 extends AbstractStruct implements AddRemovable
   public static int readCommon(List<StructEntry> list, ByteBuffer buffer, int offset)
   {
     list.add(new PriTypeBitmap(buffer, offset, 4, EFFECT_PRIMARY_TYPE));
-    if (Profile.isEnhancedEdition()) {
+	if (Profile.getEngine() == Profile.Engine.IWD2) {
+      list.add(new SecTypeBitmap(buffer, offset + 4, 4, EFFECT_SECONDARY_TYPE));
+    } else if (Profile.isEnhancedEdition()) {
       list.add(new DecNumber(buffer, offset + 4, 4, EFFECT_USED_INTERNALLY));
     } else {
       list.add(new DecNumber(buffer, offset + 4, 4, COMMON_UNUSED));
@@ -88,7 +93,7 @@ public final class Effect2 extends AbstractStruct implements AddRemovable
     list.add(new DecNumber(buffer, offset + 20, 4, EFFECT_PARAMETER_3));
     list.add(new DecNumber(buffer, offset + 24, 4, EFFECT_PARAMETER_4));
     list.add(new DecNumber(buffer, offset + 28, 4, EFFECT_PARAMETER_5));
-    if (Profile.isEnhancedEdition()) {
+    if (Profile.isEnhancedEdition() || Profile.getEngine() == Profile.Engine.IWD2) {
       list.add(new DecNumber(buffer, offset + 32, 4, EFFECT_TIME_APPLIED));
     } else {
       list.add(new DecNumber(buffer, offset + 32, 4, COMMON_UNUSED));
@@ -110,6 +115,8 @@ public final class Effect2 extends AbstractStruct implements AddRemovable
     }
     if (ResourceFactory.resourceExists("PROJECTL.IDS")) {
       list.add(new IdsBitmap(buffer, offset + 84, 4, EFFECT_IMPACT_PROJECTILE, "PROJECTL.IDS"));
+    } else if (Profile.getEngine() == Profile.Engine.IWD2) {
+      list.add(new Bitmap(buffer, offset + 84, 4, EFFECT_IMPACT_PROJECTILE, EffectType.s_proj_iwd2_effect));
     } else {
       list.add(new DecNumber(buffer, offset + 84, 4, EFFECT_IMPACT_PROJECTILE));
     }
@@ -117,9 +124,24 @@ public final class Effect2 extends AbstractStruct implements AddRemovable
     slot_type.addIdsMapEntry(new IdsMapEntry(4294967295L, "NONE"));
     list.add(slot_type);
     list.add(new TextString(buffer, offset + 92, 32, EFFECT_VARIABLE_NAME));
-    list.add(new DecNumber(buffer, offset + 124, 4, EFFECT_CASTER_LEVEL));
-    list.add(new Flag(buffer, offset + 128, 4, EFFECT_INTERNAL_FLAGS, null));
-    list.add(new SecTypeBitmap(buffer, offset + 132, 4, EFFECT_SECONDARY_TYPE));
+	if (Profile.getEngine() == Profile.Engine.IWD2) {
+      list.add(new DecNumber(buffer, offset + 124, 1, EFFECT_CASTER_LEVEL));
+      list.add(new IdsBitmap(buffer, offset + 125, 1, EFFECT_CASTER_CLASS, "CLASS.IDS"));
+      list.add(new Bitmap(buffer, offset + 126, 1, EFFECT_CASTER_DOMAIN, new String[]{"None", "Cleric of Ilmater", "Cleric of Lathander", "Cleric of Selune", "Cleric of Helm", "Cleric of Oghma", "Cleric of Tempus", "Cleric of Bane", "Cleric of Mask", "Cleric of Talos"}));
+      list.add(new DecNumber(buffer, offset + 127, 1, COMMON_UNUSED));
+      list.add(new Flag(buffer, offset + 128, 4, EFFECT_INTERNAL_FLAGS, new String[]{"No flags set", "Effect initialized", null, null, null, "Invoke Lua initialized", "Delivered by projectile", "Whirlwind Attack effect", null, 
+	null, null, null, null, null, null, "Duration changed", null,
+    "Spell persistent", "Spell extended", "Spell widened", "Spell safe", "Spell empowered", "Spell maximized", null, null,
+	null, "Ignore EXEFFMOD", "Reflected"}));
+	} else {
+      list.add(new DecNumber(buffer, offset + 124, 4, EFFECT_CASTER_LEVEL));
+      list.add(new Flag(buffer, offset + 128, 4, EFFECT_INTERNAL_FLAGS, null));
+	}
+	if (Profile.getEngine() == Profile.Engine.IWD2) {
+      list.add(new DecNumber(buffer, offset + 132, 4, EFFECT_SPELL_RESISTANCE_PENETRATION));
+    } else {
+      list.add(new SecTypeBitmap(buffer, offset + 132, 4, EFFECT_SECONDARY_TYPE));
+    }
     list.add(new Unknown(buffer, offset + 136, 60));
     return offset + 196;
   }

@@ -1763,6 +1763,18 @@ public final class EffectFactory
 					replaceEntry(struct, EffectEntry.IDX_SPECIAL, EffectEntry.OFS_SPECIAL,
                         new DecNumber(getEntryData(struct, EffectEntry.IDX_SPECIAL), 0, 4, "Duration"));
 				break;
+				case "MEMODDUR":	
+					replaceEntry(struct, EffectEntry.IDX_PARAM1, EffectEntry.OFS_PARAM1,
+						new DecNumber(getEntryData(struct, EffectEntry.IDX_PARAM1), 0, 4, "Duration change (ticks)"));
+					replaceEntry(struct, EffectEntry.IDX_PARAM2, EffectEntry.OFS_PARAM2,
+                        new Bitmap(getEntryData(struct, EffectEntry.IDX_PARAM2), 0, 4, "Modifier type", new String[]{"Increment", "", "Set % of"}));
+					replaceEntry(struct, EffectEntry.IDX_SAVETYPE, EffectEntry.OFS_SAVETYPE,
+						new Flag(getEntryData(struct, EffectEntry.IDX_SAVETYPE), 0, 4, "Save type", new String[]{"No save", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
+						null, null, null, null, null, null, null, null,
+						"Non-cumulative;Subsequent MEMODDUR effects cannot change an effect's duration again."}));
+					replaceEntry(struct, EffectEntry.IDX_SPECIAL, EffectEntry.OFS_SPECIAL,
+                        new Bitmap(getEntryData(struct, EffectEntry.IDX_SPECIAL), 0, 4, "Condition", new String[]{"All effects", "Hostile effects only;Either damage effects or effects from a spell with the \"Hostile\" flag.", "Non-hostile effects only"}));
+				break;
 				case "METELEFI":
 					replaceEntry(struct, EffectEntry.IDX_PARAM1, EffectEntry.OFS_PARAM1,
 						new DecNumber(getEntryData(struct, EffectEntry.IDX_PARAM1), 0, 4, "Maximum range"));
@@ -3569,6 +3581,8 @@ public final class EffectFactory
           IdsBitmap ids = new IdsBitmap(buffer, offset + 4, 4, "Projectile", "PROJECTL.IDS");
           ids.addIdsMapEntry(new IdsMapEntry(0L, "None"));
           s.add(ids);
+		} else if (Profile.getEngine() == Profile.Engine.IWD2) {
+		  s.add(new Bitmap(buffer, offset + 4, 4, "Projectile", EffectType.s_proj_iwd2_effect));
         } else {
           LongIntegerHashMap<String> idsmap;
           if (Profile.getEngine() == Profile.Engine.IWD || Profile.getEngine() == Profile.Engine.IWD2) {
@@ -6318,7 +6332,7 @@ public final class EffectFactory
 
       case 430: // Projectile type using effects list
         s.add(new DecNumber(buffer, offset, 4, AbstractStruct.COMMON_UNUSED));
-        s.add(new DecNumber(buffer, offset + 4, 4, "Projectile"));
+		s.add(new Bitmap(buffer, offset + 4, 4, "Projectile", EffectType.s_proj_iwd2_effect));
         restype = "SPL";
         break;
 
@@ -6547,6 +6561,10 @@ public final class EffectFactory
 				case "MEMIRRIM":	
 					theparam1 = new DecNumber(buffer, offset, 4, "Value");
 					theparam2 = new Bitmap(buffer, offset + 4, 4, "Modifier type", s_inctype);
+				break;
+				case "MEMODDUR":	
+					theparam1 = new DecNumber(buffer, offset, 4, "Duration change (ticks)");
+					theparam2 = new Bitmap(buffer, offset + 4, 4, "Modifier type", new String[]{"Increment", "", "Set % of"});
 				break;
 				case "METELEFI":
 					theparam1 = new DecNumber(buffer, offset, 4, "Maximum range");
@@ -6975,6 +6993,11 @@ public final class EffectFactory
 						null, null, null, null, null, null, null, null,
 						"Modify personal space"});
 				break;
+				case "MEMODDUR":	
+					thesavetype = new Flag(buffer, offset + 8, 4, "Save type", new String[]{"No save", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
+						null, null, null, null, null, null, null, null,
+						"Non-cumulative;Subsequent MEMODDUR effects cannot change an effect's duration again."});
+				break;
 				case "MEWHIRLA":	
 					thesavetype = new Flag(buffer, offset + 8, 4, "Save type", new String[]{"No save", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
 						null, null, null, null, null, null, null, null,
@@ -7373,6 +7396,9 @@ public final class EffectFactory
 				break;
 				case "MEMIRRIM":	
 					thespecial = new DecNumber(buffer, offset, 4, "Duration");
+				break;
+				case "MEMODDUR":
+					thespecial = new Bitmap(buffer, offset, 4, "Condition", new String[]{"All effects", "Hostile effects only;Either damage effects or effects from a spell with the \"Hostile\" flag.", "Non-hostile effects only"});
 				break;
 				case "MEHGTST":
 					thespecial = new Bitmap(buffer, offset, 4, "Height property", new String[]{"Height", "Velocity", "Acceleration", "Minimum Height", "Maximum Height"});
