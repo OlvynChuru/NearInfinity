@@ -313,7 +313,9 @@ public final class EffectFactory
       // 90..99
       "Keg", "Not keg", "Outsider", "Not outsider", "Nonliving (undead, construct or object)", "Not nonliving", "Mindless (undead, construct, object, shambling mound, or ooze)", "Not mindless", "Drow or duergar", "Not drow or duergar",
       // 100..109
-      "Light-sensitive (drow, duergar, fungi, shadow, wight, or wraith)", "Not light-sensitive", "Fiend", "Not fiend", "Fiend or undead", "Not Fiend or undead", "Airborne", "Not airborne", "Incorporeal or ethereal", "Not incorporeal or ethereal"};
+      "Light-sensitive (drow, duergar, fungi, shadow, wight, or wraith)", "Not light-sensitive", "Fiend", "Not fiend", "Fiend or undead", "Not Fiend or undead", "Airborne", "Not airborne", "Incorporeal or ethereal", "Not incorporeal or ethereal",
+      // 110..119
+      "Yuan-ti", "Not yuan-ti"};
 
   public static final String[] s_sumanim = {"No animation", "Monster summoning circle",
                                             "Animal summoning circle", "Earth summoning circle",
@@ -1229,12 +1231,22 @@ public final class EffectFactory
 						"Heal from damage type"}));
 				break;
 				case 223:
-				case 224:
 				case 227:
 				case 228:
 					replaceEntry(struct, EffectEntry.IDX_RESOURCE, EffectEntry.OFS_RESOURCE,
 						new ResourceRef(getEntryData(struct, EffectEntry.IDX_RESOURCE), 0,
                         EFFECT_RESOURCE, "SPL"));
+				break;
+				case 224:
+					replaceEntry(struct, EffectEntry.IDX_PARAM1, EffectEntry.OFS_PARAM1,
+						new DecNumber(getEntryData(struct, EffectEntry.IDX_PARAM1), 0, 4, "Interval"));
+					replaceEntry(struct, EffectEntry.IDX_RESOURCE, EffectEntry.OFS_RESOURCE,
+						new ResourceRef(getEntryData(struct, EffectEntry.IDX_RESOURCE), 0,
+                        EFFECT_RESOURCE, "SPL"));
+					replaceEntry(struct, EffectEntry.IDX_SAVETYPE, EffectEntry.OFS_SAVETYPE,
+						new Flag(getEntryData(struct, EffectEntry.IDX_SAVETYPE), 0, 4, "Save type", new String[]{"Measure interval in seconds", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
+						null, null, null, null, null, null, null, null,
+						null, null, null, null, "Measure interval in ticks;The spell will be applied every parameter1 ticks (1/15 of a second)"}));
 				break;
 				case 225:
 					replaceEntry(struct, EffectEntry.IDX_RESOURCE, EffectEntry.OFS_RESOURCE,
@@ -1246,6 +1258,15 @@ public final class EffectFactory
 						null, null, null, null, "On being hit effect;Triggers on being hit rather than on hitting another creature.", "Effect targets attacker", "You are effect source", "On critical hit only", null, null, "Not triggered by whirlwind attack"}));
 					replaceEntry(struct, EffectEntry.IDX_SPECIAL, EffectEntry.OFS_SPECIAL,
                         new UnknownDecimal(getEntryData(struct, EffectEntry.IDX_SPECIAL), 0, 4, "Header type/# uses"));
+				break;
+				case 226:
+					replaceEntry(struct, EffectEntry.IDX_PARAM1, EffectEntry.OFS_PARAM1,
+						new DecNumber(getEntryData(struct, EffectEntry.IDX_PARAM1), 0, 4, "Minimum damage necessary to trigger"));
+					replaceEntry(struct, EffectEntry.IDX_RESOURCE, EffectEntry.OFS_RESOURCE,
+						new ResourceRef(getEntryData(struct, EffectEntry.IDX_RESOURCE), 0,
+                        EFFECT_RESOURCE, "SPL"));
+					replaceEntry(struct, EffectEntry.IDX_SPECIAL, EffectEntry.OFS_SPECIAL,
+						new Flag(getEntryData(struct, EffectEntry.IDX_SPECIAL), 0, 4, "Types checked", new String[]{"None", "Acid", "Cold", "Electricity", "Fire", "Piercing", "Poison", "Magic", "Missile", "Slashing", "Piercing missile", "Bludgeoning missile", "Nonlethal", "Soul eater", "Bludgeoning", "Disease"}));
 				break;
 				case 231:
 					replaceEntry(struct, EffectEntry.IDX_PARAM1, EffectEntry.OFS_PARAM1,
@@ -1289,7 +1310,7 @@ public final class EffectFactory
 					replaceEntry(struct, EffectEntry.IDX_PARAM1, EffectEntry.OFS_PARAM1,
 						new Bitmap(getEntryData(struct, EffectEntry.IDX_PARAM1), 0, 4, "Category", ItmResource.s_categories));
 					replaceEntry(struct, EffectEntry.IDX_SAVETYPE, EffectEntry.OFS_SAVETYPE,
-						new Flag(getEntryData(struct, EffectEntry.IDX_SAVETYPE), 0, 4, "Save type", new String[]{"Count all attacks of opportunity", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
+						new Flag(getEntryData(struct, EffectEntry.IDX_SAVETYPE), 0, 4, "Save type", new String[]{"No save", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
 						null, null, null, null, null, null, null, null,
 						"Critical item", "Two-handed", "Droppable", "Displayable", "Cursed", "Not copyable", "Magical", "Left-handed",
 						"Silver", "Cold iron", "Off-handed", "Conversable"}));
@@ -1306,7 +1327,7 @@ public final class EffectFactory
 					replaceEntry(struct, EffectEntry.IDX_PARAM1, EffectEntry.OFS_PARAM1,
 						new DecNumber(getEntryData(struct, EffectEntry.IDX_PARAM1), 0, 4, "Value"));
 					replaceEntry(struct, EffectEntry.IDX_SAVETYPE, EffectEntry.OFS_SAVETYPE,
-						new Flag(getEntryData(struct, EffectEntry.IDX_SAVETYPE), 0, 4, "Save type", new String[]{"Count all attacks of opportunity", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
+						new Flag(getEntryData(struct, EffectEntry.IDX_SAVETYPE), 0, 4, "Save type", new String[]{"No save", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
 						null, null, null, null, null, null, null, null,
 						"Match projectile index", "Match projectile type", "Match internal projectile type", "Limited uses", "Consume use on attack", null, null, null,
 						"Modify projectile width;Affects fireball radius and cone width", "Modify projectile speed", "Replace projectile", "Modify projectile length;Affects skull trap trigger radius and cone length"}));
@@ -1331,13 +1352,18 @@ public final class EffectFactory
 					replaceEntry(struct, EffectEntry.IDX_RESOURCE, EffectEntry.OFS_RESOURCE,
 						newResource);
 					replaceEntry(struct, EffectEntry.IDX_SAVETYPE, EffectEntry.OFS_SAVETYPE,
-						new Flag(getEntryData(struct, EffectEntry.IDX_SAVETYPE), 0, 4, "Save type", new String[]{"Count all attacks of opportunity", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
+						new Flag(getEntryData(struct, EffectEntry.IDX_SAVETYPE), 0, 4, "Save type", new String[]{"No save", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
 						null, null, null, null, null, "Don't call typeMutator", "Don't call projectileMutator", "Don't call effectMutator"}));
 					if (spellStateResource.equalsIgnoreCase("EXEMPSPL") || spellStateResource.equalsIgnoreCase("EXEXTSPL") || spellStateResource.equalsIgnoreCase("EXMASSPL") || spellStateResource.equalsIgnoreCase("EXMAXSPL") || spellStateResource.equalsIgnoreCase("EXPERSPL") || spellStateResource.equalsIgnoreCase("EXQUISPL") || spellStateResource.equalsIgnoreCase("EXSAFSPL") || spellStateResource.equalsIgnoreCase("EXWIDSPL")) {
 						replaceEntry(struct, EffectEntry.IDX_PARAM1, EffectEntry.OFS_PARAM1,
 							new DecNumber(getEntryData(struct, EffectEntry.IDX_PARAM1), 0, 4, "Spell level adjust"));
 						replaceEntry(struct, EffectEntry.IDX_SPECIAL, EffectEntry.OFS_SPECIAL,
 							new DecNumber(getEntryData(struct, EffectEntry.IDX_SPECIAL), 0, 4, "# uses"));
+					} else if (spellStateResource.equalsIgnoreCase("MEBOULSH")) {
+						replaceEntry(struct, EffectEntry.IDX_PARAM1, EffectEntry.OFS_PARAM1,
+							new UnknownDecimal(getEntryData(struct, EffectEntry.IDX_PARAM1), 0, 4, "Bonus/Dice size/Dice thrown/Unused"));
+						replaceEntry(struct, EffectEntry.IDX_SPECIAL, EffectEntry.OFS_SPECIAL,
+                        new UnknownDecimal(getEntryData(struct, EffectEntry.IDX_SPECIAL), 0, 4, "Condition/# uses"));
 					}
 			}
 			return true;
@@ -1380,7 +1406,7 @@ public final class EffectFactory
 					replaceEntry(struct, EffectEntry.IDX_SAVETYPE, EffectEntry.OFS_SAVETYPE,
 						new Flag(getEntryData(struct, EffectEntry.IDX_SAVETYPE), 0, 4, "Save type", new String[]{"No save", null, null, null, null, null, null, null, null, 
 						              null, null, "Fortitude;Use this instead of bit 2.", "Reflex;Use this instead of bit 3.", "Will;Use this instead of bit 4.", null, null, null,
-									  "Use damage multipliers", "Melee attack", "Ranged attack", "Can sneak attack;If bits 17 and 18 aren't set, you need spellstate 232 in order to sneak attack.", null, "Drain hit points to maximum", "Drain hit points", "Can sneak attack;Works even if bits 17 and 18 aren't set.", "Sneak attack only;Deals no damage except on a sneak attack.", "Damage reduction;The damage is reduced by the target's damage reduction."}));
+									  "Use damage multipliers", "Melee attack", "Ranged attack", "Can sneak attack;If bits 17 and 18 aren't set, you need spellstate 232 in order to sneak attack.", null, "Drain hit points to maximum", "Drain hit points", "Can sneak attack;Works even if bits 17 and 18 aren't set.", "Sneak attack only;Deals no damage except on a sneak attack.", "Damage reduction;The damage is reduced by the target's damage reduction.", "Bypass mirror image"}));
 					replaceEntry(struct, EffectEntry.IDX_SPECIAL, EffectEntry.OFS_SPECIAL,
 						new UnknownDecimal(getEntryData(struct, EffectEntry.IDX_SPECIAL), 0, 4, "Bonus stat/Multiplier/Divisor/Save bonus stat"));
 				break;
@@ -1668,7 +1694,7 @@ public final class EffectFactory
 					replaceEntry(struct, EffectEntry.IDX_SAVETYPE, EffectEntry.OFS_SAVETYPE,
 						new Flag(getEntryData(struct, EffectEntry.IDX_SAVETYPE), 0, 4, "Save type", new String[]{"No save", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
 						null, null, null, null, null, null, null, null,
-						null, null, null, null, "Invert condition;The spell will be applied if target is not doing the action.", "Use range;The spell will only be applied if target is targeting a point within the range."}));
+						null, null, null, null, "Invert condition;The spell will be applied if target is not doing the action.", "Use range;The spell will only be applied if target is targeting a point within the range.", "Check line of sight;The spell will only be applied if target is within sight."}));
 					replaceEntry(struct, EffectEntry.IDX_SPECIAL, EffectEntry.OFS_SPECIAL,
                         new UnknownDecimal(getEntryData(struct, EffectEntry.IDX_SPECIAL), 0, 4, "Action/Range"));
 				break;
@@ -1726,6 +1752,10 @@ public final class EffectFactory
 					replaceEntry(struct, EffectEntry.IDX_SPECIAL, EffectEntry.OFS_SPECIAL,
 						new UnknownDecimal(getEntryData(struct, EffectEntry.IDX_SPECIAL), 0, 4, "Percent chance/Multiplier/Divisor/Bonus stat"));
 				break;
+				case "MEMONKAN":
+					replaceEntry(struct, EffectEntry.IDX_SPECIAL, EffectEntry.OFS_SPECIAL,
+						new Bitmap(getEntryData(struct, EffectEntry.IDX_SPECIAL), 0, 4, "Animation change type", new String[]{"Change to BG2 monk animation", "Remove BG2 monk animation"}));
+				break;
 				case "MESMITE":
 					replaceEntry(struct, EffectEntry.IDX_PARAM1, EffectEntry.OFS_PARAM1,
 						new UnknownDecimal(getEntryData(struct, EffectEntry.IDX_PARAM1), 0, 4, "Bonus/Dice size/Dice thrown/Unused"));
@@ -1773,7 +1803,7 @@ public final class EffectFactory
 						null, null, null, null, null, null, null, null,
 						"Non-cumulative;Subsequent MEMODDUR effects cannot change an effect's duration again."}));
 					replaceEntry(struct, EffectEntry.IDX_SPECIAL, EffectEntry.OFS_SPECIAL,
-                        new Bitmap(getEntryData(struct, EffectEntry.IDX_SPECIAL), 0, 4, "Condition", new String[]{"All effects", "Hostile effects only;Either damage effects or effects from a spell with the \"Hostile\" flag.", "Non-hostile effects only"}));
+                        new Bitmap(getEntryData(struct, EffectEntry.IDX_SPECIAL), 0, 4, "Condition", new String[]{"All effects", "Hostile effects only", "Non-hostile effects only"}));
 				break;
 				case "METELEFI":
 					replaceEntry(struct, EffectEntry.IDX_PARAM1, EffectEntry.OFS_PARAM1,
@@ -1812,7 +1842,8 @@ public final class EffectFactory
 					replaceEntry(struct, EffectEntry.IDX_SAVETYPE, EffectEntry.OFS_SAVETYPE,
 						new Flag(getEntryData(struct, EffectEntry.IDX_SAVETYPE), 0, 4, "Save type", new String[]{"No save", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
 						null, null, null, null, null, null, null, null,
-						null, "Check sequence;The creature will only spin if they are currently doing the animation sequence."}));
+						null, "Check sequence;The creature will only spin if they are currently doing the animation sequence.", null, "Disable actions", null, null, null, null,
+						null, "Whirlwind attack;The creature will only spin if two or more creatures are within weapon range, adjusted for Improved Whirlwind Attack."}));
 					replaceEntry(struct, EffectEntry.IDX_SPECIAL, EffectEntry.OFS_SPECIAL,
                         new IdsBitmap(getEntryData(struct, EffectEntry.IDX_SPECIAL), 0, 4, "Sequence", "SEQUENCE.IDS"));
 				break;
@@ -1919,6 +1950,22 @@ public final class EffectFactory
 						replaceEntry(struct, EffectEntry.IDX_SPECIAL, EffectEntry.OFS_SPECIAL,
 							new DecNumber(getEntryData(struct, EffectEntry.IDX_SPECIAL), 0, 4, "Delay"));
 					}
+				break;
+				case "MEDAMSLV":
+					replaceEntry(struct, EffectEntry.IDX_PARAM1, EffectEntry.OFS_PARAM1,
+						new DecNumber(getEntryData(struct, EffectEntry.IDX_PARAM1), 0, 4, "Value"));
+					replaceEntry(struct, EffectEntry.IDX_PARAM2, EffectEntry.OFS_PARAM2,
+						new Bitmap(getEntryData(struct, EffectEntry.IDX_PARAM2), 0, 4, "Weapon type",
+						new String[]{"Enchanted", "Magical", "Non-magical", "Silver",
+						"Non-silver", "Non-silver, non-magical", "Two-handed",
+						"One-handed", "Cursed", "Non-cursed", "Cold iron",
+						"Non-cold-iron"}));
+					replaceEntry(struct, EffectEntry.IDX_SAVETYPE, EffectEntry.OFS_SAVETYPE,
+						new Flag(getEntryData(struct, EffectEntry.IDX_SAVETYPE), 0, 4, "Save type", new String[]{"Reduce by flat amount", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
+						null, null, null, null, null, null, null, null,
+						"Reduce by percentage"}));
+					replaceEntry(struct, EffectEntry.IDX_SPECIAL, EffectEntry.OFS_SPECIAL,
+						new StringRef(getEntryData(struct, EffectEntry.IDX_SPECIAL), 0, "String"));
 				break;
 				case "MEDEFLEC":
 					replaceEntry(struct, EffectEntry.IDX_PARAM1, EffectEntry.OFS_PARAM1,
@@ -6200,6 +6247,12 @@ public final class EffectFactory
 			case 214:
 				theparam1 = new IdsBitmap(buffer, offset, 4, "Damage type", "DAMAGES.IDS");
 			break;
+			case 224:
+				theparam1 = new DecNumber(buffer, offset, 4, "Interval");
+			break;
+			case 226:
+				theparam1 = new DecNumber(buffer, offset, 4, "Minimum damage necessary to trigger");
+			break;
 			case 231:
 				theparam1 = new Bitmap(buffer, offset, 4, "AC against attacks of opportunity", new String[]{"Immune", "+1", "+2", "+3", "+4", "+5", "+6", "+7", "+8", "+9", "+10"});
 			break;
@@ -6239,6 +6292,8 @@ public final class EffectFactory
 			case 251:
 				if (theresourceValue.equalsIgnoreCase("EXEMPSPL") || theresourceValue.equalsIgnoreCase("EXEXTSPL") || theresourceValue.equalsIgnoreCase("EXMASSPL") || theresourceValue.equalsIgnoreCase("EXMAXSPL") || theresourceValue.equalsIgnoreCase("EXPERSPL") || theresourceValue.equalsIgnoreCase("EXQUISPL") || theresourceValue.equalsIgnoreCase("EXSAFSPL") || theresourceValue.equalsIgnoreCase("EXWIDSPL")) {
 					theparam1 = new DecNumber(buffer, offset, 4, "Spell level adjust");
+				} else if (theresourceValue.equalsIgnoreCase("MEBOULSH")) {
+					theparam1 = new UnknownDecimal(buffer, offset, 4, "Bonus/Dice size/Dice thrown/Unused");
 				}
 			break;
 		}
@@ -6609,6 +6664,13 @@ public final class EffectFactory
 					theparam1 = new DecNumber(buffer, offset, 4, "Percentage reduction");
 					theparam2 = new Flag(buffer, offset + 4, 4, "Types blocked", new String[]{"None", "Acid", "Cold", "Electricity", "Fire", "Piercing", "Poison", "Magic", "Missile", "Slashing", "Piercing missile", "Bludgeoning missile", "Nonlethal", "Soul eater", "Bludgeoning", "Disease"});
 				break;
+				case "MEDAMSLV":
+					theparam1 = new DecNumber(buffer, offset, 4, "Value");
+					theparam2 = new Bitmap(buffer, offset + 4, 4, "Types blocked", new String[]{"Enchanted", "Magical", "Non-magical", "Silver",
+		"Non-silver", "Non-silver, non-magical", "Two-handed",
+		"One-handed", "Cursed", "Non-cursed", "Cold iron",
+		"Non-cold-iron"});
+				break;
 				case "MEDEFLEC":
 					theparam1 = new StringRef(buffer, offset, "String");
 					theparam2 = new Flag(buffer, offset + 4, 4, "Types blocked", new String[]{"None", "Acid", "Cold", "Electricity", "Fire", "Piercing", "Poison", "Magic", "Missile", "Slashing", "Piercing missile", "Bludgeoning missile", "Nonlethal", "Soul eater", "Bludgeoning", "Disease"});
@@ -6641,10 +6703,17 @@ public final class EffectFactory
 	private static String getBufferResource(ByteBuffer buffer, int offset) 
 	{
 		byte[] bytes = new byte[8];
+		int realLength = 0;
 		for (int i = 0; i < 8; i++) {
 			bytes[i] = buffer.get(offset + i);
+			if (bytes[i] != 0) {
+				realLength++;
+			}
 		}
 		String s = new String(bytes, StandardCharsets.UTF_8);
+		if (realLength < 8) {
+			s = s.substring(0, realLength);
+		}
 		return s;
 	}
 
@@ -6690,31 +6759,18 @@ public final class EffectFactory
 					"Resource");
 				switch(theparam2Value) {
 					case 207:
-						theresource = new ResourceRef(buffer, offset,
-							EFFECT_RESOURCE, "CRE");
-					break;
 					case 223:
 					case 224:
+					case 225:
 					case 227:
 					case 228:
-						theresource = new ResourceRef(buffer, offset,
-							EFFECT_RESOURCE, "SPL");
-					break;
-					case 225:
-						theresource = new ResourceRef(buffer, offset,
-							EFFECT_RESOURCE, "SPL");
-					break;
-					case 236:
 					case 237:
-						theresource = new ResourceRef(buffer, offset,
-							EFFECT_RESOURCE, "SPL");
+						theresource = new ResourceRef(buffer, offset, EFFECT_RESOURCE, "SPL");
 					break;
 					case 240:
 						theresource = new TextString(buffer, offset, 8, "Metamagic Lua function");
 					break;
 					case 250:
-						theresource = new TextString(buffer, offset, 8, "Lua function");
-					break;
 					case 251:
 						theresource = new TextString(buffer, offset, 8, "Lua function");
 					break;
@@ -6847,6 +6903,11 @@ public final class EffectFactory
 						null, null, null, null, null, null, null, null,
 						"Heal from damage type"});
 				break;
+				case 224:
+					thesavetype = new Flag(buffer, offset + 8, 4, "Save type", new String[]{"No save", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
+						null, null, null, null, null, null, null, null,
+						null, null, null, null, "Measure interval in ticks;The spell will be applied every parameter1 ticks (1/15 of a second)"});
+				break;
 				case 225:
 					thesavetype = new Flag(buffer, offset + 8, 4, "Save type", new String[]{"No save", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
 						null, null, null, null, null, null, null, null,
@@ -6870,7 +6931,7 @@ public final class EffectFactory
 						"Modify projectile width;Affects fireball radius and cone width", "Modify projectile speed", "Replace projectile", "Modify projectile length;Affects skull trap trigger radius and cone length"});
 				break;
 				case 251:
-					thesavetype = new Flag(buffer, offset + 8, 4, "Save type", new String[]{"Count all attacks of opportunity", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
+					thesavetype = new Flag(buffer, offset + 8, 4, "Save type", new String[]{"No save", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
 						null, null, null, null, null, "Don't call typeMutator", "Don't call projectileMutator", "Don't call effectMutator"});
 				break;
 				default:
@@ -6881,7 +6942,7 @@ public final class EffectFactory
 				case "EXDAMAGE":
 					thesavetype = new Flag(buffer, offset + 8, 4, "Save type", new String[]{"No save", null, null, null, null, null, null, null, null, 
 									  null, null, "Fortitude;Use this instead of bit 2.", "Reflex;Use this instead of bit 3.", "Will;Use this instead of bit 4.", null, null, null,
-									  "Use damage multipliers", "Melee attack", "Ranged attack", "Can sneak attack;If bits 17 and 18 aren't set, you need spellstate 232 in order to sneak attack.", null, "Drain hit points to maximum", "Drain hit points", "Can sneak attack;Works even if bits 17 and 18 aren't set.", "Sneak attack only;Deals no damage except on a sneak attack.", "Damage reduction;The damage is reduced by the target's damage reduction."});
+									  "Use damage multipliers", "Melee attack", "Ranged attack", "Can sneak attack;If bits 17 and 18 aren't set, you need spellstate 232 in order to sneak attack.", null, "Drain hit points to maximum", "Drain hit points", "Can sneak attack;Works even if bits 17 and 18 aren't set.", "Sneak attack only;Deals no damage except on a sneak attack.", "Damage reduction;The damage is reduced by the target's damage reduction.", "Bypass mirror image"});
 				break;
 				case "EXMODMEM":
 					thesavetype = new Flag(buffer, offset + 8, 4, "Save type", new String[]{"No save", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
@@ -6969,7 +7030,7 @@ public final class EffectFactory
 				case "MEACTSPL":
 					thesavetype = new Flag(buffer, offset + 8, 4, "Save type", new String[]{"No save", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
 						null, null, null, null, null, null, null, null,
-						null, null, null, null, "Invert condition;The spell will be applied if target is not doing the action.", "Use range;The spell will only be applied if target is targeting a point within the range."});
+						null, null, null, null, "Invert condition;The spell will be applied if target is not doing the action.", "Use range;The spell will only be applied if target is targeting a point within the range.", "Check line of sight;The spell will only be applied if target is within sight."});
 				break;
 				case "MEBARRAG":
 				case "MEBARRAM":
@@ -7007,7 +7068,8 @@ public final class EffectFactory
 				case "MESPIN":
 					thesavetype = new Flag(buffer, offset + 8, 4, "Save type", new String[]{"No save", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
 						null, null, null, null, null, null, null, null,
-						null, "Check sequence;The creature will only spin if they are currently doing the animation sequence."});
+						null, "Check sequence;The creature will only spin if they are currently doing the animation sequence.", null, "Disable actions", null, null, null, null,
+						null, "Whirlwind attack;The creature will only spin if two or more creatures are within weapon range, adjusted for Improved Whirlwind Attack."});
 				break;
 				case "MECRIT":
 					thesavetype = new Flag(buffer, offset + 8, 4, "Save type", new String[]{"No save", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
@@ -7029,6 +7091,11 @@ public final class EffectFactory
 					thesavetype = new Flag(buffer, offset + 8, 4, "Save type", new String[]{"Use delay", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
 						null, null, null, null, null, null, null, null,
 						"Limited uses instead of delay", "Remove parent effects on end"});
+				break;
+				case "MEDAMSLV":
+					thesavetype = new Flag(buffer, offset + 8, 4, "Save type", new String[]{"Reduce by flat amount", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
+						null, null, null, null, null, null, null, null,
+						"Reduce by percentage"});
 				break;
 				case "MEDEFLEC":
 					thesavetype = new Flag(buffer, offset + 8, 4, "Save type", new String[]{"Use delay", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
@@ -7319,6 +7386,8 @@ public final class EffectFactory
 				case 251:
 					if (theresourceValue.equalsIgnoreCase("EXEMPSPL") || theresourceValue.equalsIgnoreCase("EXEXTSPL") || theresourceValue.equalsIgnoreCase("EXMASSPL") || theresourceValue.equalsIgnoreCase("EXMAXSPL") || theresourceValue.equalsIgnoreCase("EXPERSPL") || theresourceValue.equalsIgnoreCase("EXQUISPL") || theresourceValue.equalsIgnoreCase("EXSAFSPL") || theresourceValue.equalsIgnoreCase("EXWIDSPL")) {
 						thespecial = new DecNumber(buffer, offset, 4, "# uses");
+					} else if (theresourceValue.equalsIgnoreCase("MEBOULSH")) {
+						thespecial = new UnknownDecimal(buffer, offset, 4, "Condition/# uses");
 					}
 				break;
 			}
@@ -7386,6 +7455,9 @@ public final class EffectFactory
 				case "MESPLPRC":	
 					thespecial = new UnknownDecimal(buffer, offset, 4, "Percent chance/Multiplier/Divisor/Bonus stat");
 				break;
+				case "MEMONKAN":
+					thespecial = new Bitmap(buffer, offset, 4, "Animation change type", new String[]{"Change to BG2 monk animation", "Remove BG2 monk animation"});
+				break;
 				case "MESMITE":
 					thespecial = new Bitmap(buffer, offset, 4, "Smiting alignment", new String[]{"Smite evil", "Smite good"});
 				break;
@@ -7398,7 +7470,7 @@ public final class EffectFactory
 					thespecial = new DecNumber(buffer, offset, 4, "Duration");
 				break;
 				case "MEMODDUR":
-					thespecial = new Bitmap(buffer, offset, 4, "Condition", new String[]{"All effects", "Hostile effects only;Either damage effects or effects from a spell with the \"Hostile\" flag.", "Non-hostile effects only"});
+					thespecial = new Bitmap(buffer, offset, 4, "Condition", new String[]{"All effects", "Hostile effects only", "Non-hostile effects only"});
 				break;
 				case "MEHGTST":
 					thespecial = new Bitmap(buffer, offset, 4, "Height property", new String[]{"Height", "Velocity", "Acceleration", "Minimum Height", "Maximum Height"});
@@ -7423,6 +7495,9 @@ public final class EffectFactory
 				break;
 				case "EXSPLDEF":
 					thespecial = new DecNumber(buffer, offset, 4, "# spell levels");
+				break;
+				case "MEDAMSLV":
+					thespecial = new StringRef(buffer, offset, "String");
 				break;
 				case "MEDAMPRC":
 				case "MEDEFLEC":

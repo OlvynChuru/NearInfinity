@@ -194,11 +194,12 @@ public final class CreResource extends AbstractStruct
   public static final String CRE_HEIGHT                       = "Height";
   public static final String CRE_VERTICAL_VELOCITY            = "Vertical velocity";
   public static final String CRE_VERTICAL_ACCEL               = "Vertical acceleration";
-  public static final String CRE_MIN_HEIGHT                   = "Minimum height";
+  public static final String CRE_MINIMUM_HEIGHT                   = "Minimum height";
   public static final String CRE_MAXIMUM_HEIGHT               = "Minimum height";
   public static final String CRE_SUMMONER_ID                  = "Summoner identifier";
   public static final String CRE_HAS_FOUND_SUMMONER           = "Used internally";
   public static final String CRE_SUMMON_NUMBER                = "Summon number";
+  public static final String CRE_GLOBAL_EFFECT_FLAGS          = "Global effect flags (Player1 only)";
   public static final String CRE_EXTRA_FLAGS                  = "Extra flags";
   public static final String CRE_ENCHANTMENT_LEVEL            = "Enchantment level";
   public static final String CRE_FEATS_1                      = "Feats (1/4)";
@@ -482,10 +483,12 @@ public final class CreResource extends AbstractStruct
     "Has seen party", "Invulnerable", "Non-threatening enemy", "No talk", "Ignore return to start", "Ignore inhibit AI", null,
     null, "Allegiance tracking", "General tracking", "Race tracking", "Class tracking",
     "Specifics tracking", "Gender tracking", "Alignment tracking", "Uninterruptible"};
+  public static final String[] s_iwd2ee_global_effect_flag = {
+    "No flags set", "Duel", "Time slow"};
   public static final String[] s_iwd2ee_extra_cre_flag = {
     "No flags set", null, null, null, null, null, null, null, null, 
 	null, null, null, null, "Armored arcana multiplied;Used internally to increase the effect of Armored Arcana.", "Really hidden", null, null,
-    "Rewind time recording;The game is recording the character's effects, HP and position for Rewind Time.", "Metamagic updated;Used internally.", null, null, null, null, null, "Wall of force creature;Used internally for Wall of Force."};
+    "Rewind time recording;The game is recording the character's effects, HP and position for Rewind Time.", "Metamagic updated;Used internally.", null, null, null, null, null, "Wall of force creature;Used internally for Wall of Force.", "Debug effect feedback", "Debug action feedback"};
   public static final String[] s_feats1 = {
     "No feats selected", "Aegis of rime", "Ambidexterity", "Aqua mortis", "Armor proficiency", "Armored arcana",
     "Arterial strike", "Blind fight", "Bullheaded", "Cleave", "Combat casting", "Courteous magocracy", "Crippling strike",
@@ -1146,12 +1149,15 @@ public final class CreResource extends AbstractStruct
 	addField(new DecNumber(buffer, offset + 380, 2, CRE_HEIGHT));
 	addField(new DecNumber(buffer, offset + 382, 2, CRE_VERTICAL_VELOCITY));
 	addField(new DecNumber(buffer, offset + 384, 2, CRE_VERTICAL_ACCEL));
-    addField(new Unknown(buffer, offset + 386, 6));
+	addField(new DecNumber(buffer, offset + 386, 2, CRE_MINIMUM_HEIGHT));
+	addField(new DecNumber(buffer, offset + 388, 2, CRE_MAXIMUM_HEIGHT));
+    addField(new Unknown(buffer, offset + 390, 2));
 	addField(new DecNumber(buffer, offset + 392, 4, CRE_SUMMONER_ID));
 	addField(new DecNumber(buffer, offset + 396, 1, CRE_HAS_FOUND_SUMMONER));
 	addField(new Unknown(buffer, offset + 397, 1));
 	addField(new DecNumber(buffer, offset + 398, 2, CRE_SUMMON_NUMBER));
-	addField(new Unknown(buffer, offset + 400, 12));
+	addField(new Unknown(buffer, offset + 400, 8));
+	addField(new Flag(buffer, offset + 408, 4, CRE_GLOBAL_EFFECT_FLAGS, s_iwd2ee_global_effect_flag));
 	addField(new Flag(buffer, offset + 412, 4, CRE_EXTRA_FLAGS, s_iwd2ee_extra_cre_flag));
 	addField(new Unknown(buffer, offset + 416, 4));
     addField(new ResourceRef(buffer, offset + 420, CRE_SCRIPT_TEAM, "BCS"));
