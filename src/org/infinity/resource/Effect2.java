@@ -34,6 +34,7 @@ public final class Effect2 extends AbstractStruct implements AddRemovable
   public static final String EFFECT_PARAMETER_3       = "Parameter 3";
   public static final String EFFECT_PARAMETER_4       = "Parameter 4";
   public static final String EFFECT_PARAMETER_5       = "Parameter 5 (unused)";
+  public static final String EFFECT_SOURCE_CONSTANT_ID = "Source constant identifier";
   public static final String EFFECT_TIME_APPLIED      = "Time applied (ticks)";
   public static final String EFFECT_RESOURCE_2        = "Resource 2";
   public static final String EFFECT_RESOURCE_3        = "Resource 3";
@@ -52,6 +53,7 @@ public final class Effect2 extends AbstractStruct implements AddRemovable
   public static final String EFFECT_CASTER_DOMAIN     = "Caster domain";
   public static final String EFFECT_INTERNAL_FLAGS    = "Internal flags";
   public static final String EFFECT_SECONDARY_TYPE    = "Secondary type";
+  public static final String EFFECT_IDENTIFIER        = "Effect identifier";
   public static final String EFFECT_SPELL_RESISTANCE_PENETRATION    = "Spell resistance penetration";
 
   public static final String[] s_itmflag = {"No flags set", "Add strength bonus", "Breakable",
@@ -92,7 +94,12 @@ public final class Effect2 extends AbstractStruct implements AddRemovable
     }
     list.add(new DecNumber(buffer, offset + 20, 4, EFFECT_PARAMETER_3));
     list.add(new DecNumber(buffer, offset + 24, 4, EFFECT_PARAMETER_4));
-    list.add(new DecNumber(buffer, offset + 28, 4, EFFECT_PARAMETER_5));
+    if (Profile.getEngine() == Profile.Engine.IWD2) {
+      list.add(new DecNumber(buffer, offset + 28, 4, EFFECT_SOURCE_CONSTANT_ID));
+    } else {
+      list.add(new DecNumber(buffer, offset + 28, 4, EFFECT_PARAMETER_5));
+    }
+    
     if (Profile.isEnhancedEdition() || Profile.getEngine() == Profile.Engine.IWD2) {
       list.add(new DecNumber(buffer, offset + 32, 4, EFFECT_TIME_APPLIED));
     } else {
@@ -129,20 +136,24 @@ public final class Effect2 extends AbstractStruct implements AddRemovable
       list.add(new IdsBitmap(buffer, offset + 125, 1, EFFECT_CASTER_CLASS, "CLASS.IDS"));
       list.add(new Bitmap(buffer, offset + 126, 1, EFFECT_CASTER_DOMAIN, new String[]{"None", "Cleric of Ilmater", "Cleric of Lathander", "Cleric of Selune", "Cleric of Helm", "Cleric of Oghma", "Cleric of Tempus", "Cleric of Bane", "Cleric of Mask", "Cleric of Talos"}));
       list.add(new DecNumber(buffer, offset + 127, 1, COMMON_UNUSED));
-      list.add(new Flag(buffer, offset + 128, 4, EFFECT_INTERNAL_FLAGS, new String[]{"No flags set", "Effect initialized", null, null, null, "Invoke Lua initialized", "Delivered by projectile", "Whirlwind Attack effect", null, 
-	null, null, null, null, null, null, "Duration changed", null,
-    "Spell persistent", "Spell extended", "Spell widened", "Spell safe", "Spell empowered", "Spell maximized", null, null,
-	null, "Ignore EXEFFMOD", "Reflected"}));
+      list.add(new DecNumber(buffer, offset + 128, 4, EFFECT_SPELL_RESISTANCE_PENETRATION));
 	} else {
       list.add(new DecNumber(buffer, offset + 124, 4, EFFECT_CASTER_LEVEL));
       list.add(new Flag(buffer, offset + 128, 4, EFFECT_INTERNAL_FLAGS, null));
 	}
 	if (Profile.getEngine() == Profile.Engine.IWD2) {
-      list.add(new DecNumber(buffer, offset + 132, 4, EFFECT_SPELL_RESISTANCE_PENETRATION));
+	  list.add(new DecNumber(buffer, offset + 132, 4, EFFECT_USED_INTERNALLY));
+	  list.add(new DecNumber(buffer, offset + 136, 4, EFFECT_IDENTIFIER));
+      list.add(new Flag(buffer, offset + 140, 4, EFFECT_INTERNAL_FLAGS, new String[]{"No flags set", "Effect initialized", null, null, null, "Invoke Lua initialized", "Delivered by projectile", "Whirlwind Attack effect", "On-tick function processed", 
+	null, null, null, null, null, null, "Duration changed", null,
+    "Spell persistent", "Spell extended", "Spell widened", "Spell safe", "Spell empowered", "Spell maximized", null, null,
+	null, "Ignore EXEFFMOD", "Reflected"}));
+	  list.add(new Unknown(buffer, offset + 144, 52));
     } else {
       list.add(new SecTypeBitmap(buffer, offset + 132, 4, EFFECT_SECONDARY_TYPE));
+	  list.add(new Unknown(buffer, offset + 136, 60));
     }
-    list.add(new Unknown(buffer, offset + 136, 60));
+ 
     return offset + 196;
   }
 

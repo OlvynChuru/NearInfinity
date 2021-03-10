@@ -29,6 +29,8 @@ public final class Item extends AbstractStruct implements AddRemovable
 
   private static final String[] s_itemflag = {"No flags set", "Identified", "Not stealable", "Stolen",
                                               "Undroppable"};
+  private static final String[] s_itemflag_iwd2 = {"No flags set", "Identified", "Not stealable", "Stolen",
+                                              "Magical blue outline"};
 
   public Item() throws Exception
   {
@@ -62,7 +64,11 @@ public final class Item extends AbstractStruct implements AddRemovable
     addField(new DecNumber(buffer, offset + 10, 2, CRE_ITEM_QUANTITY_1));
     addField(new DecNumber(buffer, offset + 12, 2, CRE_ITEM_QUANTITY_2));
     addField(new DecNumber(buffer, offset + 14, 2, CRE_ITEM_QUANTITY_3));
-    addField(new Flag(buffer, offset + 16, 4, CRE_ITEM_FLAGS, s_itemflag));
+    if (Profile.getEngine() == Profile.Engine.IWD2) {
+      addField(new Flag(buffer, offset + 16, 4, CRE_ITEM_FLAGS, s_itemflag_iwd2));
+    } else {
+      addField(new Flag(buffer, offset + 16, 4, CRE_ITEM_FLAGS, s_itemflag));
+    }
     return offset + 20;
   }
 }

@@ -1184,6 +1184,10 @@ public final class EffectFactory
 				case 194:
 					replaceEntry(struct, EffectEntry.IDX_PARAM1, EffectEntry.OFS_PARAM1,
 						new DecNumber(getEntryData(struct, EffectEntry.IDX_PARAM1), 0, 4, "Value"));
+					replaceEntry(struct, EffectEntry.IDX_SAVETYPE, EffectEntry.OFS_SAVETYPE,
+						new Flag(getEntryData(struct, EffectEntry.IDX_SAVETYPE), 0, 4, "Save type", new String[]{"No save", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
+						null, null, null, null, null, null, null, null,
+						"Increase turn resistance;Makes the creature harder to turn rather than making the creature better at turning"}));
 				break;
 				case 195:
 					replaceEntry(struct, EffectEntry.IDX_PARAM1, EffectEntry.OFS_PARAM1,
@@ -1218,6 +1222,11 @@ public final class EffectFactory
 					replaceEntry(struct, EffectEntry.IDX_SPECIAL, EffectEntry.OFS_SPECIAL,
                         new DecNumber(getEntryData(struct, EffectEntry.IDX_SPECIAL), 0, 4, "Unused"));
 				break;
+				case 211:
+					replaceEntry(struct, EffectEntry.IDX_SAVETYPE, EffectEntry.OFS_SAVETYPE,
+						new Flag(getEntryData(struct, EffectEntry.IDX_SAVETYPE), 0, 4, "Save type", new String[]{"No save", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
+						null, null, null, null, null, null, null, null,
+						"Deathwatch", "Arcane Sight"}));
 				case 213:
 					replaceEntry(struct, EffectEntry.IDX_PARAM1, EffectEntry.OFS_PARAM1,
 						new IdsBitmap(getEntryData(struct, EffectEntry.IDX_PARAM1), 0, 4, "New damage type", "DAMAGES.IDS"));
@@ -1270,11 +1279,11 @@ public final class EffectFactory
 				break;
 				case 231:
 					replaceEntry(struct, EffectEntry.IDX_PARAM1, EffectEntry.OFS_PARAM1,
-						new Bitmap(getEntryData(struct, EffectEntry.IDX_PARAM1), 0, 4, "AC against attacks of opportunity", new String[]{"Immune", "+1", "+2", "+3", "+4", "+5", "+6", "+7", "+8", "+9", "+10"}));
+						new Bitmap(getEntryData(struct, EffectEntry.IDX_PARAM1), 0, 4, "AC against with attacks of opportunity", new String[]{"Immune", "+1", "+2", "+3", "+4", "+5", "+6", "+7", "+8", "+9", "+10"}));
 					replaceEntry(struct, EffectEntry.IDX_SAVETYPE, EffectEntry.OFS_SAVETYPE,
 						new Flag(getEntryData(struct, EffectEntry.IDX_SAVETYPE), 0, 4, "Save type", new String[]{"Count all attacks of opportunity", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
 						null, null, null, null, null, null, null, null,
-						"Fleeing attack opportunity", "Ranged attack opportunity", "Spell cast attack opportunity"}));
+						"Fleeing attack opportunity", "Ranged attack opportunity", "Spell cast attack opportunity", "Opportunist attack opportunity", "Modify attack bonus with attacks of opportunity"}));
 				break;
 				case 234:
 					replaceEntry(struct, EffectEntry.IDX_PARAM1, EffectEntry.OFS_PARAM1,
@@ -1752,6 +1761,34 @@ public final class EffectFactory
 					replaceEntry(struct, EffectEntry.IDX_SPECIAL, EffectEntry.OFS_SPECIAL,
 						new UnknownDecimal(getEntryData(struct, EffectEntry.IDX_SPECIAL), 0, 4, "Percent chance/Multiplier/Divisor/Bonus stat"));
 				break;
+				case "MEMOONBL":
+				case "MERNWEAP":
+					replaceEntry(struct, EffectEntry.IDX_PARAM1, EffectEntry.OFS_PARAM1,
+						new TextString(getEntryData(struct, EffectEntry.IDX_PARAM1), 0, 4, "Resource (first four letters)"));
+					replaceEntry(struct, EffectEntry.IDX_PARAM2, EffectEntry.OFS_PARAM2,
+						new TextString(getEntryData(struct, EffectEntry.IDX_PARAM2), 0, 4, "Resource (last four letters)"));
+					replaceEntry(struct, EffectEntry.IDX_SAVETYPE, EffectEntry.OFS_SAVETYPE,
+						new Flag(getEntryData(struct, EffectEntry.IDX_SAVETYPE), 0, 4, "Save type", new String[]{"No save", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
+						null, null, null, null, null, null, null, null,
+						"Equip weapon", null, null, null, "Restore original weapon in slot after duration"}));
+				break;
+				case "MECRWEAP":
+					replaceEntry(struct, EffectEntry.IDX_PARAM1, EffectEntry.OFS_PARAM1,
+						new TextString(getEntryData(struct, EffectEntry.IDX_PARAM1), 0, 4, "Resource (first four letters)"));
+					replaceEntry(struct, EffectEntry.IDX_PARAM2, EffectEntry.OFS_PARAM2,
+						new TextString(getEntryData(struct, EffectEntry.IDX_PARAM2), 0, 4, "Resource (last four letters)"));
+					replaceEntry(struct, EffectEntry.IDX_SAVETYPE, EffectEntry.OFS_SAVETYPE,
+						new Flag(getEntryData(struct, EffectEntry.IDX_SAVETYPE), 0, 4, "Save type", new String[]{"No save", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
+						null, null, null, null, null, null, null, null,
+						"Equip weapon", null, null, null, "Restore original weapon in slot after duration"}));
+					if (ResourceFactory.resourceExists("REALSLOT.IDS")) {
+						replaceEntry(struct, EffectEntry.IDX_SPECIAL, EffectEntry.OFS_SPECIAL,
+							new IdsBitmap(getEntryData(struct, EffectEntry.IDX_SPECIAL), 0, 4, "Slot", "REALSLOT.IDS"));
+					} else {
+						replaceEntry(struct, EffectEntry.IDX_SPECIAL, EffectEntry.OFS_SPECIAL,
+							new IdsBitmap(getEntryData(struct, EffectEntry.IDX_SPECIAL), 0, 4, "Slot", "SLOTS.IDS"));
+					}
+				break;
 				case "MEMONKAN":
 					replaceEntry(struct, EffectEntry.IDX_SPECIAL, EffectEntry.OFS_SPECIAL,
 						new Bitmap(getEntryData(struct, EffectEntry.IDX_SPECIAL), 0, 4, "Animation change type", new String[]{"Change to BG2 monk animation", "Remove BG2 monk animation"}));
@@ -1830,9 +1867,9 @@ public final class EffectFactory
 						new Flag(getEntryData(struct, EffectEntry.IDX_SAVETYPE), 0, 4, "Save type", new String[]{"No save", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
 						null, null, null, null, null, null, null, null,
 						"Mainhand attack;If bits 16 and 17 aren't set, the weapon is specified by the resource field.", "Offhand attack;If bits 16 and 17 aren't set, the weapon is specified by the resource field.", null, null, null, null, null, null, 
-						"Limit by range;Only creatures within weapon range will be attacked.", "Whirlwind attack;Combined with bit 24, the range is increased if you have Improved Whirlwind Attack.", null, null, null, null, "Ignore cleave effect;On-hit cleave effects of the weapon won't be triggered."}));
+						"Limit by range;Only creatures within weapon range will be attacked.", "Whirlwind attack;Combined with bit 24, the range is increased if you have Improved Whirlwind Attack.", null, null, "Use damage penalty", null, "Ignore cleave effect;On-hit cleave effects of the weapon won't be triggered."}));
 					replaceEntry(struct, EffectEntry.IDX_SPECIAL, EffectEntry.OFS_SPECIAL,
-                        new DecNumber(getEntryData(struct, EffectEntry.IDX_SPECIAL), 0, 4, "Attack bonus"));
+						new UnknownDecimal(getEntryData(struct, EffectEntry.IDX_SPECIAL), 0, 4, "Attack penalty/Damage penalty"));
 				break;
 				case "MESPIN":
 					replaceEntry(struct, EffectEntry.IDX_PARAM1, EffectEntry.OFS_PARAM1,
@@ -1983,6 +2020,10 @@ public final class EffectFactory
 						replaceEntry(struct, EffectEntry.IDX_SPECIAL, EffectEntry.OFS_SPECIAL,
 							new DecNumber(getEntryData(struct, EffectEntry.IDX_SPECIAL), 0, 4, "Delay"));
 					}
+				break;
+				case "MERESCON":
+					replaceEntry(struct, EffectEntry.IDX_SPECIAL, EffectEntry.OFS_SPECIAL,
+                        new DecNumber(getEntryData(struct, EffectEntry.IDX_SPECIAL), 0, 4, "Duration"));
 				break;
 			}
 			return true;
@@ -6536,10 +6577,24 @@ public final class EffectFactory
 				case "MEERUPT2":
 				case "MEWOFOST":
 				case "MESPELL":
-					theparam1 = new TextString(buffer, offset, 4, "Resource (first four letters)");
-					theparam2 = new TextString(buffer, offset + 4, 4, "Resource (last four letters)");
-				break;
 				case "MEPSTACK":
+				case "MESTATRO":
+				case "MESTATES":
+				case "MESTATEI":
+				case "MEKILLSP":
+				case "MESPLSTS":
+				case "MEMOVSPL":
+				case "MERACESP":
+				case "MEACTSPL":
+				case "MEBARRAG":
+				case "MEBARRAM":
+				case "MEWOFORC":
+				case "MESPLSAV":
+				case "MEQUIVPA":
+				case "MESPLPRC":
+				case "MEMOONBL":
+				case "MERNWEAP":
+				case "MECRWEAP":
 					theparam1 = new TextString(buffer, offset, 4, "Resource (first four letters)");
 					theparam2 = new TextString(buffer, offset + 4, 4, "Resource (last four letters)");
 				break;
@@ -6551,55 +6606,6 @@ public final class EffectFactory
 						theparam1 = new Bitmap(buffer, offset, 4, "Match effect", s_effname_s);
 						theparam2 = new DecNumber(buffer, offset + 4, 4, "Match parameter2");
 					}
-				break;
-				case "MESTATRO":
-					theparam1 = new TextString(buffer, offset, 4, "Resource (first four letters)");
-					theparam2 = new TextString(buffer, offset + 4, 4, "Resource (last four letters)");
-				break;
-				case "MESTATES":
-					theparam1 = new TextString(buffer, offset, 4, "Resource (first four letters)");
-					theparam2 = new TextString(buffer, offset + 4, 4, "Resource (last four letters)");
-				break;
-				case "MESTATEI":
-					theparam1 = new TextString(buffer, offset, 4, "Resource (first four letters)");
-					theparam2 = new TextString(buffer, offset + 4, 4, "Resource (last four letters)");
-				break;
-				case "MEKILLSP":
-					theparam1 = new TextString(buffer, offset, 4, "Resource (first four letters)");
-					theparam2 = new TextString(buffer, offset + 4, 4, "Resource (last four letters)");
-				break;
-				case "MESPLSTS":
-					theparam1 = new TextString(buffer, offset, 4, "Resource (first four letters)");
-					theparam2 = new TextString(buffer, offset + 4, 4, "Resource (last four letters)");
-				case "MEMOVSPL":
-					theparam1 = new TextString(buffer, offset, 4, "Resource (first four letters)");
-					theparam2 = new TextString(buffer, offset + 4, 4, "Resource (last four letters)");
-				case "MERACESP":
-					theparam1 = new TextString(buffer, offset, 4, "Resource (first four letters)");
-					theparam2 = new TextString(buffer, offset + 4, 4, "Resource (last four letters)");
-				case "MEACTSPL":
-					theparam1 = new TextString(buffer, offset, 4, "Resource (first four letters)");
-					theparam2 = new TextString(buffer, offset + 4, 4, "Resource (last four letters)");
-				case "MEBARRAG":
-				case "MEBARRAM":
-					theparam1 = new TextString(buffer, offset, 4, "Resource (first four letters)");
-					theparam2 = new TextString(buffer, offset + 4, 4, "Resource (last four letters)");
-				break;
-				case "MEWOFORC":
-					theparam1 = new TextString(buffer, offset, 4, "Resource (first four letters)");
-					theparam2 = new TextString(buffer, offset + 4, 4, "Resource (last four letters)");
-				break;
-				case "MESPLSAV":	
-					theparam1 = new TextString(buffer, offset, 4, "Resource (first four letters)");
-					theparam2 = new TextString(buffer, offset + 4, 4, "Resource (last four letters)");
-				break;
-				case "MEQUIVPA":	
-					theparam1 = new TextString(buffer, offset, 4, "Resource (first four letters)");
-					theparam2 = new TextString(buffer, offset + 4, 4, "Resource (last four letters)");
-				break;
-				case "MESPLPRC":	
-					theparam1 = new TextString(buffer, offset, 4, "Resource (first four letters)");
-					theparam2 = new TextString(buffer, offset + 4, 4, "Resource (last four letters)");
 				break;
 				case "MESMITE":
 					theparam1 = new UnknownDecimal(buffer, offset, 4, "Bonus/Dice size/Dice thrown/Unused");
@@ -6883,6 +6889,11 @@ public final class EffectFactory
 						null, null, null, null, null, null, null, null,
 						"This weapon only", null, "Rogue levels unnecessary;The effect will give the character sneak attack damage even if they aren't a rogue."});
 				break;
+				case 194:
+					thesavetype = new Flag(buffer, offset + 8, 4, "Save type", new String[]{"No save", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
+						null, null, null, null, null, null, null, null,
+						"Increase turn resistance;Makes the creature harder to turn rather than making the creature better at turning"});
+				break;
 				case 195:
 					thesavetype = new Flag(buffer, offset + 8, 4, "Save type", new String[]{"No save", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
 						null, null, null, null, null, null, null, null,
@@ -6898,6 +6909,10 @@ public final class EffectFactory
 						null, null, null, null, null, null, null, null,
 						null, null, null, null, "Summoned fiend"});
 				break;
+				case 211:
+					thesavetype = new Flag(buffer, offset + 8, 4, "Save type", new String[]{"No save", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
+						null, null, null, null, null, null, null, null,
+						"Deathwatch", "Arcane sight"});
 				case 214:
 					thesavetype = new Flag(buffer, offset + 8, 4, "Save type", new String[]{"Immune to damage type", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
 						null, null, null, null, null, null, null, null,
@@ -6916,7 +6931,7 @@ public final class EffectFactory
 				case 231:
 					thesavetype = new Flag(buffer, offset + 8, 4, "Save type", new String[]{"Count all attacks of opportunity", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
 						null, null, null, null, null, null, null, null,
-						"Fleeing attack opportunity", "Ranged attack opportunity", "Spell cast attack opportunity"});
+						"Fleeing attack opportunity", "Ranged attack opportunity", "Spell cast attack opportunity", "Opportunist attack opportunity", "Modify attack bonus with attacks of opportunity"});
 				break;
 				case 241:
 					thesavetype = new Flag(buffer, offset + 8, 4, "Save type", new String[]{"No save", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
@@ -7045,6 +7060,14 @@ public final class EffectFactory
 						null, null, null, null, null, null, null, null, 
 						null, null, null, "Invert base save bonus", "New spell as parent", "Cast by summoner;The spell will be applied with the creature's summoner as the source."});
 				break;
+				case "MEMOONBL":
+				case "MERNWEAP":
+				case "MECRWEAP":
+				case "MEERASEW":
+					thesavetype = new Flag(buffer, offset + 8, 4, "Save type", new String[]{"No save", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
+						null, null, null, null, null, null, null, null,
+						"Equip weapon", null, null, null, "Restore original weapon in slot after duration"});
+				break;
 				case "MEQUIVPA":	
 					thesavetype = new Flag(buffer, offset + 8, 4, "Save type", new String[]{"No save", null, null, null, null, null, null, null, null, 
 						null, null, "Fortitude;Use this instead of bit 2.", "Reflex;Use this instead of bit 3.", "Will;Use this instead of bit 4."});
@@ -7063,7 +7086,7 @@ public final class EffectFactory
 					thesavetype = new Flag(buffer, offset + 8, 4, "Save type", new String[]{"No save", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
 						null, null, null, null, null, null, null, null,
 						"Mainhand attack;If bits 16 and 17 aren't set, the weapon is specified by the resource field.", "Offhand attack;If bits 16 and 17 aren't set, the weapon is specified by the resource field.", null, null, null, null, null, null, 
-						"Limit by range;Only creatures within weapon range will be attacked.", "Whirlwind attack;Combined with bit 24, the range is increased if you have Improved Whirlwind Attack.", null, null, null, null, "Ignore cleave effect;On-hit cleave effects of the weapon won't be triggered."});
+						"Limit by range;Only creatures within weapon range will be attacked.", "Whirlwind attack;Combined with bit 24, the range is increased if you have Improved Whirlwind Attack.", null, null, "Use damage penalty", null, "Ignore cleave effect;On-hit cleave effects of the weapon won't be triggered."});
 				break;
 				case "MESPIN":
 					thesavetype = new Flag(buffer, offset + 8, 4, "Save type", new String[]{"No save", null, null, "Fortitude", "Reflex", "Will", null, null, null, 
@@ -7369,6 +7392,9 @@ public final class EffectFactory
 				case 225:
 					thespecial = new UnknownDecimal(buffer, offset, 4, "Header type/# uses");
 				break;
+				case 226:
+					thespecial = new Flag(buffer, offset, 4, "Types checked", new String[]{"None", "Acid", "Cold", "Electricity", "Fire", "Piercing", "Poison", "Magic", "Missile", "Slashing", "Piercing missile", "Bludgeoning missile", "Nonlethal", "Soul eater", "Bludgeoning", "Disease"});
+				break;
 				case 241:
 					thespecial = new Bitmap(buffer, offset, 4, "Special category", new String[]{"", "Armor", "Robe", "Shield", "Ranged", "Melee", "Fist", "Launcher"});
 				break;
@@ -7455,6 +7481,13 @@ public final class EffectFactory
 				case "MESPLPRC":	
 					thespecial = new UnknownDecimal(buffer, offset, 4, "Percent chance/Multiplier/Divisor/Bonus stat");
 				break;
+				case "MECRWEAP":
+					if (ResourceFactory.resourceExists("REALSLOT.IDS")) {
+						thespecial = new IdsBitmap(buffer, offset, 4, "Slot", "REALSLOT.IDS");
+					} else {
+						thespecial = new IdsBitmap(buffer, offset, 4, "Slot", "SLOTS.IDS");
+					}
+				break;
 				case "MEMONKAN":
 					thespecial = new Bitmap(buffer, offset, 4, "Animation change type", new String[]{"Change to BG2 monk animation", "Remove BG2 monk animation"});
 				break;
@@ -7464,9 +7497,8 @@ public final class EffectFactory
 				case "MESMITEH":
 				case "METURNUN":
 				case "MEQUIPLE":
-					thespecial = new DecNumber(buffer, offset, 4, "Duration");
-				break;
-				case "MEMIRRIM":	
+				case "MEMIRRIM":
+				case "MERESCON":	
 					thespecial = new DecNumber(buffer, offset, 4, "Duration");
 				break;
 				case "MEMODDUR":
@@ -7476,7 +7508,7 @@ public final class EffectFactory
 					thespecial = new Bitmap(buffer, offset, 4, "Height property", new String[]{"Height", "Velocity", "Acceleration", "Minimum Height", "Maximum Height"});
 				break;
 				case "MEWHIRLA":	
-					thespecial = new DecNumber(buffer, offset, 4, "Attack bonus");
+					thespecial = new UnknownDecimal(buffer, offset, 4, "Attack penalty/Damage penalty");
 				break;
 				case "MESPIN":
 					thespecial = new IdsBitmap(buffer, offset, 4, "Sequence", "SEQUENCE.IDS");

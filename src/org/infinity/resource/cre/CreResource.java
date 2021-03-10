@@ -191,16 +191,20 @@ public final class CreResource extends AbstractStruct
   public static final String CRE_LEVEL_WIZARD                 = "Wizard level";
   public static final String CRE_SOUND_SLOT_FMT               = "Sound: %s";
   public static final String CRE_SOUND_SLOT_GENERIC           = "Soundset string";
+  public static final String CRE_CONSTANT_ID                  = "Constant identifier";
   public static final String CRE_HEIGHT                       = "Height";
   public static final String CRE_VERTICAL_VELOCITY            = "Vertical velocity";
   public static final String CRE_VERTICAL_ACCEL               = "Vertical acceleration";
-  public static final String CRE_MINIMUM_HEIGHT                   = "Minimum height";
+  public static final String CRE_MINIMUM_HEIGHT               = "Minimum height";
   public static final String CRE_MAXIMUM_HEIGHT               = "Minimum height";
   public static final String CRE_SUMMONER_ID                  = "Summoner identifier";
-  public static final String CRE_HAS_FOUND_SUMMONER           = "Used internally";
-  public static final String CRE_SUMMON_NUMBER                = "Summon number";
+  public static final String CRE_SUMMONER_LEVEL               = "Summoner level";
+  public static final String CRE_SUMMONER_CLASS               = "Summoner class";
+  public static final String CRE_SUMMONER_DOMAIN              = "Summoner domain";
+  public static final String CRE_TURN_RESISTANCE              = "Turn resistance";
   public static final String CRE_GLOBAL_EFFECT_FLAGS          = "Global effect flags (Player1 only)";
   public static final String CRE_EXTRA_FLAGS                  = "Extra flags";
+  public static final String CRE_BIOGRAPHY                    = "Biography";
   public static final String CRE_ENCHANTMENT_LEVEL            = "Enchantment level";
   public static final String CRE_FEATS_1                      = "Feats (1/4)";
   public static final String CRE_FEATS_2                      = "Feats (2/4)";
@@ -527,6 +531,10 @@ public final class CreResource extends AbstractStruct
     "No dialogue turn", "Call for help", null, null, null, null, null, null, null, null, null, null, null, null, null, null, "Death globals set (internal)", "Area supplemental"};
   public static final String[] s_attributes_iwd2 = {"No flags set", "Heart of Fury bonuses", "Critical hit immunity",
                                                     "Cannot be paladin", "Cannot be monk"};
+  public static final String[] s_iwd2_domain = {
+    "None", "Ilmater", "Lathander", "Selune",
+    "Helm", "Oghma", "Tempus", "Bane",
+    "Mask", "Talos"};
   public static final String[] s_attacks = {"0", "1", "2", "3", "4", "5", "1/2", "3/2", "5/2", "7/2", "9/2"};
   public static final String[] s_visible = {"Shown", "Hidden"};
   public static final String[] s_profLabels = {"Active class", "Original class"};
@@ -1135,17 +1143,19 @@ public final class CreResource extends AbstractStruct
       sndMap = IdsMapCache.get("SOUNDOFF.IDS");
     }
     if (sndMap != null) {
-      for (int i = 0; i < 54; i++) {
+      for (int i = 0; i < 46; i++) {
         IdsMapEntry e = sndMap.get((long)i);
         String label = (e != null) ? e.getSymbol() : "Unknown";
         addField(new StringRef(buffer, offset + 164 + (i * 4), String.format(CRE_SOUND_SLOT_FMT, label)));
       }
     }
     else {
-      for (int i = 0; i < 54; i++) {
+      for (int i = 0; i < 46; i++) {
         addField(new StringRef(buffer, offset + 164 + (i * 4), CRE_SOUND_SLOT_GENERIC));
       }
     }
+	addField(new DecNumber(buffer, offset + 348, 4, CRE_CONSTANT_ID));
+	addField(new Unknown(buffer, offset + 352, 28));
 	addField(new DecNumber(buffer, offset + 380, 2, CRE_HEIGHT));
 	addField(new DecNumber(buffer, offset + 382, 2, CRE_VERTICAL_VELOCITY));
 	addField(new DecNumber(buffer, offset + 384, 2, CRE_VERTICAL_ACCEL));
@@ -1153,13 +1163,14 @@ public final class CreResource extends AbstractStruct
 	addField(new DecNumber(buffer, offset + 388, 2, CRE_MAXIMUM_HEIGHT));
     addField(new Unknown(buffer, offset + 390, 2));
 	addField(new DecNumber(buffer, offset + 392, 4, CRE_SUMMONER_ID));
-	addField(new DecNumber(buffer, offset + 396, 1, CRE_HAS_FOUND_SUMMONER));
-	addField(new Unknown(buffer, offset + 397, 1));
-	addField(new DecNumber(buffer, offset + 398, 2, CRE_SUMMON_NUMBER));
+	addField(new DecNumber(buffer, offset + 396, 1, CRE_SUMMONER_LEVEL));
+	addField(new IdsBitmap(buffer, offset + 397, 1, CRE_SUMMONER_CLASS, "CLASS.IDS"));
+	addField(new Bitmap(buffer, offset + 398, 1, CRE_SUMMONER_DOMAIN, s_iwd2_domain));
+	addField(new DecNumber(buffer, offset + 399, 1, CRE_TURN_RESISTANCE));
 	addField(new Unknown(buffer, offset + 400, 8));
 	addField(new Flag(buffer, offset + 408, 4, CRE_GLOBAL_EFFECT_FLAGS, s_iwd2ee_global_effect_flag));
 	addField(new Flag(buffer, offset + 412, 4, CRE_EXTRA_FLAGS, s_iwd2ee_extra_cre_flag));
-	addField(new Unknown(buffer, offset + 416, 4));
+	addField(new StringRef(buffer, offset + 416, CRE_BIOGRAPHY));
     addField(new ResourceRef(buffer, offset + 420, CRE_SCRIPT_TEAM, "BCS"));
     addField(new ResourceRef(buffer, offset + 428, CRE_SCRIPT_SPECIAL_1, "BCS"));
     addField(new DecNumber(buffer, offset + 436, 2, CRE_ENCHANTMENT_LEVEL));
@@ -1262,7 +1273,7 @@ public final class CreResource extends AbstractStruct
     addField(new DecNumber(buffer, offset + 612, 1, CRE_MORALE));
     addField(new DecNumber(buffer, offset + 613, 1, CRE_MORALE_BREAK));
     addField(new DecNumber(buffer, offset + 614, 2, CRE_MORALE_RECOVERY));
-    addField(new KitIdsBitmap(buffer, offset + 616, CRE_KIT));
+    addField(new IdsBitmap(buffer, offset + 616, 4, CRE_KIT, "KIT.IDS"));
     addField(new ResourceRef(buffer, offset + 620, CRE_SCRIPT_OVERRIDE, "BCS"));
     addField(new ResourceRef(buffer, offset + 628, CRE_SCRIPT_SPECIAL_2, "BCS", "BS"));
     addField(new ResourceRef(buffer, offset + 636, CRE_SCRIPT_COMBAT, "BCS"));

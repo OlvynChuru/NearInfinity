@@ -63,6 +63,7 @@ public class PartyNPC extends AbstractStruct implements HasViewerTabs, AddRemova
   public static final String GAM_NPC_VOICE_SET                  = CreResource.CHR_VOICE_SET;
   public static final String GAM_NPC_VOICE_SET_PREFIX           = CreResource.CHR_VOICE_SET_PREFIX;
   public static final String GAM_NPC_NUM_TIMES_TALKED_TO        = "# times talked to";
+  public static final String GAM_NPC_WEAPON_SET_SELECTED        = "Weapon set selected";
   public static final String GAM_NPC_EXPERTISE                  = "Expertise";
   public static final String GAM_NPC_POWER_ATTACK               = "Power attack";
   public static final String GAM_NPC_ARTERIAL_STRIKE            = "Arterial strike";
@@ -387,7 +388,8 @@ public class PartyNPC extends AbstractStruct implements HasViewerTabs, AddRemova
       offset = readCharStats(buffer, offset + 482);
       addField(new TextString(buffer, offset, 8, GAM_NPC_VOICE_SET_PREFIX));
       addField(new TextString(buffer, offset + 8, 32, GAM_NPC_VOICE_SET));
-      addField(new Unknown(buffer, offset + 40, 12));
+      addField(new Unknown(buffer, offset + 40, 11));
+	  addField(new DecNumber(buffer, offset + 51, 1, GAM_NPC_WEAPON_SET_SELECTED));
       addField(new DecNumber(buffer, offset + 52, 4, GAM_NPC_EXPERTISE));
       addField(new DecNumber(buffer, offset + 56, 4, GAM_NPC_POWER_ATTACK));
       addField(new DecNumber(buffer, offset + 60, 4, GAM_NPC_ARTERIAL_STRIKE));
